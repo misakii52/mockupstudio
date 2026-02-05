@@ -3,21 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="site-title">MOCKUP STUDIO | High-End Digital Archive</title>
+    <title>MOCKUP STUDIO | Streetwear Assets</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://gumroad.com/js/gumroad.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
         body { font-family: 'Inter', sans-serif; background: #fff; color: #000; }
         .branding { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.07em; }
-        #main-nav a { color: #000 !important; font-weight: 900 !important; text-transform: uppercase; font-size: 12px; letter-spacing: 0.1em; }
-        .swiper { width: 100%; height: 85vh; background: #000; border-radius: 0 0 3rem 3rem; }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .product-card { border-bottom: 1px solid #eee; padding-bottom: 2rem; }
-        .buy-btn-black { background: #000; color: #fff; width: 100%; padding: 1.2rem; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; display: block; text-align: center; border-radius: 12px; }
+        
+        /* Navigasyon - Siyah & Bold */
+        #main-nav a { color: #000 !important; font-weight: 900; text-transform: uppercase; font-size: 11px; letter-spacing: 0.15em; cursor: pointer; }
+        
+        /* Arama Kutusu Stili */
+        .search-input {
+            width: 100%; padding: 1.5rem; border-bottom: 2px solid #000;
+            font-size: 2rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: -0.05em; outline: none; transition: 0.3s;
+        }
+        .search-input::placeholder { color: #eee; }
+        .search-input:focus { border-color: #555; }
+
+        .swiper { width: 100%; height: 80vh; border-radius: 0 0 3rem 3rem; }
+        .buy-btn-black { 
+            background: #000; color: #fff; width: 100%; padding: 1.2rem; 
+            font-size: 11px; font-weight: 900; text-transform: uppercase; 
+            letter-spacing: 0.2em; display: block; text-align: center; border-radius: 8px;
+        }
+        
         footer { background: #000; color: #fff; }
         .view { display: none; } .view.active { display: block; }
     </style>
@@ -29,32 +47,33 @@
             <div class="branding text-3xl font-black uppercase cursor-pointer" onclick="location.href=location.pathname">
                 <span id="dyn-logo-main">MOCKUP</span><span id="dyn-logo-accent" class="text-gray-200 ml-1">STUDIO</span>
             </div>
-            <div id="main-nav" class="hidden lg:flex gap-12 items-center"></div>
-            <button onclick="showPage('home')" class="text-[11px] font-black uppercase tracking-widest border-2 border-black px-6 py-2 hover:bg-black hover:text-white transition">ARCHIVE</button>
+            <div id="main-nav" class="hidden lg:flex gap-10 items-center"></div>
+            <button onclick="showPage('home')" class="text-[10px] font-black uppercase tracking-[0.2em] border-2 border-black px-6 py-2">Full Archive</button>
         </div>
     </nav>
 
     <div id="page-home" class="view active pt-20">
         <div class="swiper mySwiper"><div class="swiper-wrapper" id="slider-content"></div><div class="swiper-pagination"></div></div>
-        <section class="max-w-[1600px] mx-auto px-8 py-24">
-            <h2 class="branding text-7xl font-black mb-16 italic tracking-tighter uppercase leading-none">New Assets</h2>
-            <div id="new-arrivals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+        
+        <section class="max-w-[1600px] mx-auto px-8 pt-32 pb-16">
+            <input type="text" id="global-search" class="search-input" placeholder="SEARCH ALL ASSETS..." onkeyup="searchAssets(this.value, 'global')">
         </section>
-        <section class="max-w-[1600px] mx-auto px-8 py-32 border-t border-gray-100">
-            <h2 class="branding text-3xl font-black mb-20 italic tracking-tighter uppercase text-center">Studio Archive</h2>
-            <div id="full-archive-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12"></div>
+
+        <section class="max-w-[1600px] mx-auto px-8 py-20">
+            <h2 id="collection-title" class="branding text-5xl font-black mb-16 italic uppercase">Selected Works</h2>
+            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12"></div>
         </section>
     </div>
 
     <div id="page-detail" class="view pt-40 pb-40">
         <div class="max-w-7xl mx-auto px-8">
-            <button onclick="showPage('home')" class="mb-12 font-black uppercase text-[10px] tracking-widest">← Back</button>
+            <button onclick="showPage('home')" class="mb-12 font-black uppercase text-[10px] tracking-widest">← Return to Collection</button>
             <div class="grid lg:grid-cols-2 gap-24 items-start">
-                <div class="aspect-square bg-gray-100 rounded-[2rem] overflow-hidden shadow-2xl"><img id="det-img" class="w-full h-full object-cover"></div>
+                <div class="aspect-square rounded-[2rem] overflow-hidden shadow-2xl"><img id="det-img" class="w-full h-full object-cover"></div>
                 <div>
                     <span id="det-cat" class="text-[11px] font-black text-gray-300 uppercase tracking-[0.4em] mb-4 block"></span>
                     <h1 id="det-title" class="branding text-8xl font-black mb-8 leading-[0.85] tracking-tighter"></h1>
-                    <p id="det-price" class="text-4xl font-light text-gray-400 mb-12 italic"></p>
+                    <p id="det-price" class="text-4xl font-light text-gray-400 mb-12 italic italic"></p>
                     <p id="det-desc" class="text-gray-500 leading-relaxed text-xl font-medium border-t pt-10 mb-12"></p>
                     <div id="det-buy-cont"></div>
                 </div>
@@ -62,7 +81,7 @@
         </div>
     </div>
 
-    <footer class="py-32 px-8 mt-20">
+    <footer class="py-32 px-8 mt-40">
         <div class="max-w-[1600px] mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-20 border-b border-white/10 pb-20">
                 <div class="lg:col-span-2">
@@ -70,20 +89,19 @@
                     <p id="footer-desc" class="text-gray-500 text-xl max-w-sm font-medium italic"></p>
                 </div>
                 <div>
-                    <p class="text-[10px] font-black uppercase tracking-[0.4em] mb-10 text-white/30">Sosyal Medya</p>
-                    <ul class="space-y-4 font-bold uppercase text-xs tracking-widest">
-                        <li><a id="footer-insta" href="#" target="_blank" class="hover:text-white">Instagram</a></li>
-                        <li><a id="footer-behance" href="#" target="_blank" class="hover:text-white">Behance</a></li>
+                    <p class="text-[10px] font-black uppercase tracking-[0.4em] mb-10 text-white/30">Connection</p>
+                    <ul class="space-y-4 font-bold uppercase text-xs tracking-widest text-gray-400">
+                        <li><a id="footer-insta" href="#" target="_blank" class="hover:text-white transition">Instagram</a></li>
+                        <li><a id="footer-behance" href="#" target="_blank" class="hover:text-white transition">Behance</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="pt-10"><p class="text-[10px] font-black text-white/20 tracking-widest uppercase text-center">© 2026 Studio Archive System</p></div>
+            <div class="pt-10"><p class="text-[10px] font-black text-white/20 tracking-widest uppercase text-center">© 2026 Archive Engine</p></div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // FIREBASE BAĞLANTISI (Aynı config kullanılacak)
         const firebaseConfig = {
             apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
             authDomain: "mockup-master-db.firebaseapp.com",
@@ -96,13 +114,25 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function showPage(p) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById('page-' + p).classList.add('active'); window.scrollTo(0,0); }
+        let currentCategory = 'all';
+
+        function showPage(p) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('page-' + p).classList.add('active');
+            if(p === 'home') {
+                currentCategory = 'all';
+                document.getElementById('collection-title').innerText = "Selected Works";
+                document.getElementById('global-search').placeholder = "SEARCH ALL ASSETS...";
+                renderProducts(Object.values(window.allData.products));
+            }
+            window.scrollTo(0,0);
+        }
 
         db.ref().on('value', snap => {
             const data = snap.val(); if(!data) return;
             window.allData = data;
             
-            // Site Kimliği (Dynamic Branding)
+            // Branding Update
             const s = data.settings || {};
             document.getElementById('dyn-logo-main').innerText = s.logo || "MOCKUP";
             document.getElementById('dyn-logo-accent').innerText = s.logoAccent || "STUDIO";
@@ -111,30 +141,63 @@
             document.getElementById('footer-insta').href = s.insta || "#";
             document.getElementById('footer-behance').href = s.behance || "#";
 
-            // Slider (Çoklu Resim)
+            // Slider
             if(data.hero_slider) {
-                document.getElementById('slider-content').innerHTML = Object.values(data.hero_slider).map(s => `<div class="swiper-slide"><img src="${s.img}"></div>`).join('');
+                document.getElementById('slider-content').innerHTML = Object.values(data.hero_slider).map(sl => `<div class="swiper-slide"><img src="${sl.img}"></div>`).join('');
                 new Swiper(".mySwiper", { autoplay: {delay: 5000}, pagination: {el: ".swiper-pagination", clickable: true}, effect: 'fade' });
             }
 
-            // Ürünler
-            if(data.products) {
-                const prods = Object.values(data.products).reverse();
-                document.getElementById('new-arrivals-grid').innerHTML = prods.filter(p => p.featured).slice(0, 4).map(p => productHTML(p)).join('');
-                document.getElementById('full-archive-grid').innerHTML = prods.map(p => productHTML(p)).join('');
+            // Categories
+            if(data.categories) {
+                document.getElementById('main-nav').innerHTML = Object.values(data.categories).map(c => `<a onclick="filterCat('${c}')">${c}</a>`).join('');
             }
 
-            // Kategoriler
-            if(data.categories) {
-                document.getElementById('main-nav').innerHTML = Object.values(data.categories).map(c => `<a href="#" onclick="filterCat('${c}')">${c}</a>`).join('');
-            }
-            
-            if (window.GumroadOverlay) window.GumroadOverlay.reload();
+            // Initial Products
+            renderProducts(Object.values(data.products).reverse());
         });
 
-        function productHTML(p) {
-            const shortDesc = p.desc ? p.desc.substring(0, 50) + '...' : 'Premium Mockup Asset';
-            return `<div class="product-card"><div class="aspect-square bg-gray-50 rounded-[2rem] overflow-hidden mb-6 cursor-pointer shadow-sm hover:shadow-xl transition" onclick="openProduct('${p.id}')"><img src="${p.img}" class="w-full h-full object-cover hover:scale-110 transition duration-[2s]"></div><div class="flex justify-between items-start mb-2"><h3 class="branding text-2xl font-black uppercase tracking-tighter leading-none">${p.title}</h3><span class="font-black italic">${p.price}</span></div><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-6">${shortDesc}</p><a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="buy-btn-black">Buy on Gumroad</a></div>`;
+        function renderProducts(items) {
+            document.getElementById('product-grid').innerHTML = items.map(p => `
+                <div class="product-card">
+                    <div class="aspect-square bg-gray-50 rounded-[2rem] overflow-hidden mb-6 cursor-pointer" onclick="openProduct('${p.id}')">
+                        <img src="${p.img}" class="w-full h-full object-cover hover:scale-110 transition duration-[1.5s]">
+                    </div>
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="branding text-2xl font-black uppercase tracking-tighter leading-none">${p.title}</h3>
+                        <span class="font-black italic">${p.price}</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-6">${p.cat}</p>
+                    <a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="buy-btn-black">Buy on Gumroad</a>
+                </div>
+            `).join('');
+            if (window.GumroadOverlay) window.GumroadOverlay.reload();
+        }
+
+        function filterCat(cat) {
+            currentCategory = cat;
+            showPage('home');
+            document.getElementById('collection-title').innerText = "Category: " + cat;
+            document.getElementById('global-search').placeholder = `SEARCH IN ${cat.toUpperCase()}...`;
+            const filtered = Object.values(window.allData.products).filter(p => p.cat === cat);
+            renderProducts(filtered);
+            window.scrollTo({top: document.getElementById('global-search').offsetTop - 150, behavior: 'smooth'});
+        }
+
+        function searchAssets(query, type) {
+            let baseList = Object.values(window.allData.products);
+            
+            // Eğer bir kategorinin içindeysek, önce kategoriye göre filtrele
+            if(currentCategory !== 'all') {
+                baseList = baseList.filter(p => p.cat === currentCategory);
+            }
+
+            // Arama sorgusuna göre filtrele
+            const filtered = baseList.filter(p => 
+                p.title.toLowerCase().includes(query.toLowerCase()) || 
+                p.desc.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            renderProducts(filtered);
         }
 
         function openProduct(id) {
@@ -144,15 +207,9 @@
             document.getElementById('det-desc').innerText = p.desc;
             document.getElementById('det-cat').innerText = p.cat;
             document.getElementById('det-img').src = p.img;
-            document.getElementById('det-buy-cont').innerHTML = `<a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="buy-btn-black !py-8 !text-sm">Checkout — ${p.price}</a>`;
+            document.getElementById('det-buy-cont').innerHTML = `<a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="buy-btn-black !py-8 !text-sm">Direct Checkout — ${p.price}</a>`;
             showPage('detail');
             if (window.GumroadOverlay) window.GumroadOverlay.reload();
-        }
-
-        function filterCat(c) {
-            const filtered = Object.values(window.allData.products).filter(p => p.cat === c);
-            document.getElementById('full-archive-grid').innerHTML = filtered.map(p => productHTML(p)).join('');
-            window.scrollTo({top: document.getElementById('full-archive-grid').offsetTop - 150, behavior: 'smooth'});
         }
     </script>
 </body>
