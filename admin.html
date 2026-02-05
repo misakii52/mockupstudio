@@ -1,1 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <style>
+    body { font-family: Arial; padding: 40px; }
+    input, button { display:block; margin-bottom:10px; padding:10px; width:300px; }
+    button { cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<h2>Admin – Add Product</h2>
+
+<input id="title" placeholder="Product title">
+<input id="price" placeholder="Price">
+<input id="image" placeholder="Image URL">
+<button onclick="saveProduct()">Save</button>
+
+<hr>
+
+<h3>Products</h3>
+<div id="list"></div>
+
+<script>
+  // 🔑 SENİN FIREBASE CONFIG (AYNEN)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
+    authDomain: "mockup-master-db.firebaseapp.com",
+    databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
+    projectId: "mockup-master-db",
+    storageBucket: "mockup-master-db.firebasestorage.app",
+    messagingSenderId: "68063883147",
+    appId: "1:68063883147:web:07debadc7efe4aeccac98e"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function saveProduct() {
+    const id = Date.now();
+    db.ref("products/" + id).set({
+      title: document.getElementById("title").value,
+      price: document.getElementById("price").value,
+      img: document.getElementById("image").value
+    });
+  }
+
+  db.ref("products").on("value", snap => {
+    const data = snap.val();
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    if (!data) return;
+
+    Object.values(data).forEach(p => {
+      list.innerHTML += `<p>${p.title} - ${p.price}</p>`;
+    });
+  });
+</script>
+
+</body>
+</html>
 
