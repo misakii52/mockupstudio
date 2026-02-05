@@ -1,152 +1,127 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <title>MASTER DASHBOARD | v2.6</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; }
-        .tab-content { display: none; } .tab-content.active { display: block; }
-        input, select, textarea { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; font-weight: 600; }
-        input:focus { border-color: #000; outline: none; }
-        button { transition: 0.3s; }
-    </style>
+<meta charset="UTF-8">
+<title>MASTER ADMIN v4</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
-<body class="p-8">
-    <div class="max-w-7xl mx-auto">
-        <header class="bg-black text-white p-10 rounded-[2.5rem] mb-12 flex justify-between items-center shadow-xl">
-            <div>
-                <h1 class="text-2xl font-black uppercase tracking-tighter italic">Studio Engine</h1>
-                <p class="text-[10px] font-bold text-gray-500 tracking-[0.3em]">VERSION 2.6 STABLE</p>
-            </div>
-            <nav class="flex gap-4">
-                <button onclick="openTab('inventory')" class="bg-white text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest">Products</button>
-                <button onclick="openTab('ui')" class="bg-white/10 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20">Slider</button>
-                <button onclick="openTab('settings')" class="bg-white/10 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20">Config</button>
-            </nav>
-        </header>
 
-        <div id="settings" class="tab-content bg-white p-10 rounded-[2.5rem] shadow-sm border">
-            <h2 class="text-xl font-black mb-8 uppercase italic">Site Identity</h2>
-            <div class="grid md:grid-cols-2 gap-10">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-400">Main Logo</label><input id="setLogo">
-                    <label class="text-[10px] font-black uppercase text-gray-400">Accent Logo</label><input id="setLogoAccent">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-400">Footer Text</label><textarea id="setFooterDesc" rows="4"></textarea>
-                    <label class="text-[10px] font-black uppercase text-gray-400">Instagram</label><input id="setInsta">
-                </div>
-            </div>
-            <button onclick="saveSettings()" class="mt-8 bg-black text-white px-12 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest">Save Config</button>
-        </div>
+<body class="bg-gray-100 p-10">
+<div class="max-w-7xl mx-auto bg-white p-10 rounded-3xl shadow-xl">
 
-        <div id="inventory" class="tab-content active grid lg:grid-cols-3 gap-10">
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border h-fit">
-                <h2 id="formTitle" class="text-lg font-black mb-6 uppercase italic">Add/Edit Product</h2>
-                <input id="pId" type="hidden"><input id="pTitle" placeholder="Title">
-                <input id="pPrice" placeholder="Price (e.g. $39)"><select id="pCatList"></select>
-                <input id="pSlug" placeholder="Gumroad Slug"><input id="pImg" placeholder="Cover Image URL">
-                <textarea id="pDesc" placeholder="Product Description" rows="4"></textarea>
-                <button id="mainBtn" onclick="saveProduct()" class="w-full bg-black text-white py-4 rounded-xl font-black uppercase text-[10px] tracking-widest">Update Archive</button>
-                <button id="cancelBtn" onclick="resetForm()" class="hidden w-full mt-2 text-red-500 font-bold text-[10px] uppercase">Cancel Edit</button>
-            </div>
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border"><div id="inventory-list" class="grid gap-3"></div></div>
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border">
-                    <div class="flex gap-2 mb-6"><input id="newCat" class="!mb-0" placeholder="New Cat..."><button onclick="addCat()" class="bg-black text-white px-6 rounded-xl font-black">+</button></div>
-                    <div id="cat-list" class="flex flex-wrap gap-2"></div>
-                </div>
-            </div>
-        </div>
+<h1 class="text-3xl font-black italic mb-10">STUDIO ADMIN v4</h1>
 
-        <div id="ui" class="tab-content bg-white p-10 rounded-[2.5rem] shadow-sm border">
-            <h2 class="text-xl font-black mb-8 uppercase italic">Hero Slider (Sol Resim Sağ İçerik)</h2>
-            <div class="grid md:grid-cols-3 gap-10">
-                <div class="space-y-4"><input id="slideImg" placeholder="Image URL"><input id="slideLink" placeholder="Gumroad Slug"><button onclick="addSlide()" class="w-full bg-black text-white py-4 rounded-xl font-black uppercase text-[10px]">Add Slide</button></div>
-                <div id="slider-list" class="md:col-span-2 grid grid-cols-2 gap-4"></div>
-            </div>
-        </div>
-    </div>
+<nav class="flex gap-4 mb-10">
+<button onclick="tab('products')">Ürünler</button>
+<button onclick="tab('slider')">Slider</button>
+<button onclick="tab('pages')">Sayfalar</button>
+<button onclick="tab('settings')">Ayarlar</button>
+</nav>
 
-    <script>
-        // FIREBASE CONFIG (Sizin DB Bilgileriniz)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
-            authDomain: "mockup-master-db.firebaseapp.com",
-            databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
-            projectId: "mockup-master-db",
-            storageBucket: "mockup-master-db.firebasestorage.app",
-            messagingSenderId: "68063883147",
-            appId: "1:68063883147:web:07debadc7efe4aeccac98e"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+<!-- PRODUCTS -->
+<div id="products" class="tab">
+<h2 class="font-bold mb-4">Ürün Ekle / Düzenle</h2>
 
-        function openTab(id) { document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+<input id="pTitle" placeholder="Ürün Adı">
+<input id="pPrice" placeholder="Fiyat">
+<input id="pSlug" placeholder="Gumroad Slug">
+<input id="pImg" placeholder="Görsel URL">
+<textarea id="pDesc" placeholder="Ürün Açıklaması"></textarea>
+<textarea id="pSeo" placeholder="SEO Açıklaması (Google için)"></textarea>
 
-        function saveProduct() {
-            const id = document.getElementById('pId').value || Date.now();
-            db.ref('products/' + id).set({
-                id, title: document.getElementById('pTitle').value, price: document.getElementById('pPrice').value,
-                cat: document.getElementById('pCatList').value, slug: document.getElementById('pSlug').value,
-                img: document.getElementById('pImg').value, desc: document.getElementById('pDesc').value
-            }, () => { alert("Saved!"); resetForm(); });
-        }
+<select id="pCat"></select>
 
-        function editProduct(id) {
-            const p = allProducts[id];
-            document.getElementById('pId').value = p.id;
-            document.getElementById('pTitle').value = p.title;
-            document.getElementById('pPrice').value = p.price;
-            document.getElementById('pCatList').value = p.cat;
-            document.getElementById('pSlug').value = p.slug;
-            document.getElementById('pImg').value = p.img;
-            document.getElementById('pDesc').value = p.desc;
-            document.getElementById('formTitle').innerText = "Edit Asset";
-            document.getElementById('mainBtn').innerText = "Save Changes";
-            document.getElementById('cancelBtn').classList.remove('hidden');
-        }
+<label class="flex gap-2 items-center">
+<input type="checkbox" id="pFeatured"> Featured (Slider)
+</label>
 
-        function resetForm() {
-            document.getElementById('pId').value = ""; document.getElementById('pTitle').value = "";
-            document.getElementById('formTitle').innerText = "Add Product";
-            document.getElementById('mainBtn').innerText = "Update Archive";
-            document.getElementById('cancelBtn').classList.add('hidden');
-        }
+<button onclick="saveProduct()">Kaydet</button>
+<div id="productList" class="mt-10"></div>
+</div>
 
-        let allProducts = {};
-        db.ref('products').on('value', snap => {
-            allProducts = snap.val() || {};
-            document.getElementById('inventory-list').innerHTML = Object.values(allProducts).reverse().map(p => `
-                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border">
-                    <div class="flex items-center gap-3"><img src="${p.img}" class="w-10 h-10 object-cover rounded-lg"><span class="font-bold text-xs uppercase">${p.title}</span></div>
-                    <div class="flex gap-2"><button onclick="editProduct('${p.id}')" class="text-[10px] font-black uppercase hover:underline">Edit</button><button onclick="db.ref('products/${p.id}').remove()" class="text-red-500 font-bold text-[10px]">X</button></div>
-                </div>`).join('');
-        });
+<!-- SLIDER -->
+<div id="slider" class="tab hidden">
+<h2 class="font-bold mb-4">Slider Yönetimi (min 5)</h2>
 
-        function saveSettings() { db.ref('settings').set({ logo: document.getElementById('setLogo').value, logoAccent: document.getElementById('setLogoAccent').value, footerDesc: document.getElementById('setFooterDesc').value, insta: document.getElementById('setInsta').value }); }
-        db.ref('settings').on('value', snap => { const s = snap.val() || {}; document.getElementById('setLogo').value = s.logo || ""; document.getElementById('setLogoAccent').value = s.logoAccent || ""; document.getElementById('setFooterDesc').value = s.footerDesc || ""; document.getElementById('setInsta').value = s.insta || ""; });
+<div id="sliderList" class="grid grid-cols-3 gap-4"></div>
+</div>
 
-        function addCat() { db.ref('categories').push(document.getElementById('newCat').value); }
-        db.ref('categories').on('value', snap => {
-            const cats = snap.val() ? Object.entries(snap.val()) : [];
-            document.getElementById('cat-list').innerHTML = cats.map(([id, n]) => `<div class="bg-black text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase flex gap-2">${n} <button onclick="db.ref('categories/${id}').remove()">x</button></div>`).join('');
-            document.getElementById('pCatList').innerHTML = cats.map(([id, n]) => `<option value="${n}">${n}</option>`).join('');
-        });
+<!-- PAGES -->
+<div id="pages" class="tab hidden">
+<h2 class="font-bold mb-4">Sayfa & Sitemap</h2>
 
-        function addSlide() { db.ref('hero_slider').push({ img: document.getElementById('slideImg').value, link: document.getElementById('slideLink').value }); }
-        db.ref('hero_slider').on('value', snap => {
-            const slides = snap.val() ? Object.entries(snap.val()) : [];
-            document.getElementById('slider-list').innerHTML = slides.map(([id, s]) => `
-                <div class="relative group h-32 rounded-2xl overflow-hidden border">
-                    <img src="${s.img}" class="w-full h-full object-cover">
-                    <button onclick="db.ref('hero_slider/${id}').remove()" class="absolute inset-0 bg-red-600/90 text-white opacity-0 group-hover:opacity-100 font-bold text-[10px]">DELETE</button>
-                </div>`).join('');
-        });
-    </script>
+<input id="pageTitle" placeholder="Sayfa Başlığı">
+<input id="pageSlug" placeholder="Slug (contact, blog)">
+<textarea id="pageDesc" placeholder="SEO Açıklama"></textarea>
+
+<button onclick="addPage()">Sayfa Ekle</button>
+<div id="pageList" class="mt-6"></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings" class="tab hidden">
+<h2 class="font-bold mb-4">Site Ayarları</h2>
+<input id="setLogo" placeholder="Logo">
+<input id="setLogoAccent" placeholder="Logo Accent">
+<textarea id="setFooter" placeholder="Footer Yazısı"></textarea>
+<button onclick="saveSettings()">Kaydet</button>
+</div>
+
+</div>
+
+<script>
+firebase.initializeApp({
+ apiKey:"AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
+ databaseURL:"https://mockup-master-db-default-rtdb.firebaseio.com"
+});
+const db=firebase.database();
+
+function tab(id){
+document.querySelectorAll('.tab').forEach(t=>t.classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
+}
+
+function saveProduct(){
+const id=Date.now();
+db.ref('products/'+id).set({
+ title:pTitle.value,
+ price:pPrice.value,
+ slug:pSlug.value,
+ img:pImg.value,
+ desc:pDesc.value,
+ seo:pSeo.value,
+ cat:pCat.value,
+ featured:pFeatured.checked,
+ hidden:false
+});
+}
+
+db.ref('products').on('value',s=>{
+const v=s.val()||{};
+productList.innerHTML=Object.values(v).map(p=>`
+<div class="p-2 bg-gray-100 mb-2">
+<b>${p.title}</b> – ${p.price}
+</div>`).join('');
+});
+
+function addPage(){
+db.ref('pages/'+pageSlug.value).set({
+ title:pageTitle.value,
+ slug:pageSlug.value,
+ desc:pageDesc.value,
+ indexed:true
+});
+}
+
+function saveSettings(){
+db.ref('settings').set({
+ logo:setLogo.value,
+ logoAccent:setLogoAccent.value,
+ footerDesc:setFooter.value
+});
+}
+</script>
 </body>
 </html>
