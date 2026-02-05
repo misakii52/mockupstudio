@@ -2,124 +2,60 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Mockup Studio</title>
+<meta name="description" id="metaDesc">
 
-<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Swiper -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
-
-<!-- Gumroad -->
 <script src="https://gumroad.com/js/gumroad.js"></script>
-
-<!-- Firebase -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-<style>
-body {
-  font-family: 'Inter', sans-serif;
-  background:#fff;
-  color:#000;
-}
-
-.brand {
-  font-family:'Plus Jakarta Sans', sans-serif;
-  letter-spacing:-0.07em;
-}
-
-.btn {
-  background:#000;
-  color:#fff;
-  padding:1rem;
-  text-align:center;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.2em;
-  text-transform:uppercase;
-  border-radius:10px;
-  display:block;
-}
-
-.search-input {
-  width:0;
-  opacity:0;
-  transition:.3s;
-  border-bottom:2px solid #000;
-  outline:none;
-}
-
-.search-active .search-input {
-  width:220px;
-  opacity:1;
-  margin-left:10px;
-}
-</style>
 </head>
 
-<body>
+<body class="bg-white">
 
-<!-- NAV -->
-<nav class="fixed top-0 w-full bg-white border-b z-50">
-  <div class="max-w-[1600px] mx-auto px-8 h-20 flex justify-between items-center">
-
-    <div class="brand text-3xl font-black uppercase cursor-pointer" onclick="showAll()">
-      <span id="logo-main">MOCKUP</span>
-      <span id="logo-accent" class="text-gray-300 ml-1">STUDIO</span>
-    </div>
-
-    <div class="flex items-center gap-8">
-
-      <div id="nav-cats" class="hidden lg:flex gap-8 text-[10px] font-black uppercase tracking-widest">
-        <a onclick="showAll()" class="cursor-pointer">Shop All</a>
-      </div>
-
-      <div id="searchBox" class="flex items-center">
-        <button onclick="toggleSearch()" class="border px-4 py-2 rounded-full text-[10px] font-black uppercase">
-          🔍 Search
-        </button>
-        <input id="searchInput" class="search-input" placeholder="Search..." onkeyup="searchProducts(this.value)">
-      </div>
-
-    </div>
-  </div>
-</nav>
-
-<!-- HERO -->
-<div class="pt-20">
-  <div class="swiper mySwiper h-[85vh] rounded-b-[3rem] overflow-hidden">
-    <div class="swiper-wrapper" id="hero"></div>
-    <div class="swiper-pagination"></div>
-  </div>
+<div class="swiper mySwiper h-screen">
+<div class="swiper-wrapper" id="slider"></div>
+<div class="swiper-pagination"></div>
 </div>
 
-<!-- PRODUCTS -->
-<section class="max-w-[1600px] mx-auto px-8 py-24">
-  <h2 id="sectionTitle" class="brand text-6xl font-black uppercase italic mb-16">
-    All Products
-  </h2>
+<section id="products" class="grid grid-cols-4 gap-10 p-20"></section>
 
-  <div id="products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12"></div>
-</section>
+<script>
+firebase.initializeApp({
+ apiKey:"AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
+ databaseURL:"https://mockup-master-db-default-rtdb.firebaseio.com"
+});
+const db=firebase.database();
 
-<!-- FOOTER -->
-<footer class="bg-black text-white py-24 px-8">
-  <div class="max-w-[1600px] mx-auto grid lg:grid-cols-2 gap-20">
-    <div>
-      <h3 id="footerLogo" class="brand text-5xl font-black uppercase mb-6"></h3>
-      <p id="footerDesc" class="text-gray-400 italic"></p>
-    </div>
-    <div>
-      <a id="insta" target="_blank" class="uppercase text-xs tracking-widest text-gray-400">Instagram</a>
-    </div>
-  </div>
-</footer>
+db.ref().on('value',snap=>{
+const d=snap.val();
 
-<!-- SCRIPTS -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"><
+metaDesc.content=d.settings?.footerDesc||"";
+
+const featured=Object.values(d.products||{}).filter(p=>p.featured);
+slider.innerHTML=featured.map(p=>`
+<div class="swiper-slide grid grid-cols-2">
+<img src="${p.img}" class="w-full h-full object-cover">
+<div class="p-20">
+<h2 class="text-5xl font-black">${p.title}</h2>
+<p class="text-xl">${p.price}</p>
+<p class="text-gray-400">${p.seo}</p>
+<a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout class="bg-black text-white px-8 py-4 mt-6 inline-block">
+Buy on Gumroad
+</a>
+</div>
+</div>`).join('');
+
+new Swiper(".mySwiper",{autoplay:{delay:5000},loop:true});
+
+products.innerHTML=Object.values(d.products||{}).map(p=>`
+<div>
+<img src="${p.img}">
+<h3>${p.title}</h3>
+<p>${p.price}</p>
+</div>`).join('');
+});
+</script>
+</body>
+</html>
