@@ -1,61 +1,48 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>Mockup Studio</title>
-<meta name="description" id="metaDesc">
+  <meta charset="UTF-8" />
+  <title>Mockup Studio</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://gumroad.com/js/gumroad.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <!-- SEO -->
+  <meta name="description" content="Premium mockup paketleri. Anında indir, Gumroad üzerinden satın al.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 
-<body class="bg-white">
+<body class="bg-gray-50">
 
-<div class="swiper mySwiper h-screen">
-<div class="swiper-wrapper" id="slider"></div>
-<div class="swiper-pagination"></div>
-</div>
+<!-- HEADER -->
+<header class="bg-white shadow p-6 flex justify-between">
+  <h1 class="font-black text-2xl">MOCKUP<span class="text-gray-400">STUDIO</span></h1>
+</header>
 
-<section id="products" class="grid grid-cols-4 gap-10 p-20"></section>
+<!-- SLIDER -->
+<section class="max-w-6xl mx-auto mt-8">
+  <div id="slider" class="relative overflow-hidden rounded-xl h-64 bg-black"></div>
+</section>
 
-<script>
-firebase.initializeApp({
- apiKey:"AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
- databaseURL:"https://mockup-master-db-default-rtdb.firebaseio.com"
-});
-const db=firebase.database();
+<!-- KATEGORİLER -->
+<section class="max-w-6xl mx-auto mt-10">
+  <h2 class="font-bold text-xl mb-4">Kategoriler</h2>
+  <div id="category-list" class="flex gap-2 flex-wrap"></div>
+</section>
 
-db.ref().on('value',snap=>{
-const d=snap.val();
+<!-- ÜRÜNLER -->
+<section class="max-w-6xl mx-auto mt-10 mb-20">
+  <h2 class="font-bold text-xl mb-4">Ürünler</h2>
+  <div id="product-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+</section>
 
-metaDesc.content=d.settings?.footerDesc||"";
-
-const featured=Object.values(d.products||{}).filter(p=>p.featured);
-slider.innerHTML=featured.map(p=>`
-<div class="swiper-slide grid grid-cols-2">
-<img src="${p.img}" class="w-full h-full object-cover">
-<div class="p-20">
-<h2 class="text-5xl font-black">${p.title}</h2>
-<p class="text-xl">${p.price}</p>
-<p class="text-gray-400">${p.seo}</p>
-<a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout class="bg-black text-white px-8 py-4 mt-6 inline-block">
-Buy on Gumroad
-</a>
-</div>
-</div>`).join('');
-
-new Swiper(".mySwiper",{autoplay:{delay:5000},loop:true});
-
-products.innerHTML=Object.values(d.products||{}).map(p=>`
-<div>
-<img src="${p.img}">
-<h3>${p.title}</h3>
-<p>${p.price}</p>
-</div>`).join('');
-});
-</script>
+<script src="assets/js/index.js"></script>
 </body>
 </html>
