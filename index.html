@@ -1,55 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Mockup Studio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Tailwind CDN (GitHub Pages için sorun değil) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-  <!-- Swiper -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-
-  <!-- Gumroad -->
-  <script src="https://gumroad.com/js/gumroad.js"></script>
+  <style>
+    body { font-family: Arial; padding: 40px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; }
+    .card { border:1px solid #ddd; padding:10px; }
+    img { width:100%; height:200px; object-fit:cover; background:#f0f0f0; }
+  </style>
 </head>
+<body>
 
-<body class="bg-white text-black">
+<h1>Shop All</h1>
 
-<!-- NAV -->
-<header class="border-b">
-  <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-    <h1 class="font-black text-2xl uppercase">Mockup Studio</h1>
-    <nav id="category-nav" class="flex gap-6 text-sm font-bold uppercase"></nav>
-  </div>
-</header>
+<div id="products" class="grid"></div>
 
-<!-- HERO SLIDER -->
-<section class="mt-10">
-  <div class="swiper mySwiper max-w-7xl mx-auto rounded-2xl overflow-hidden">
-    <div class="swiper-wrapper" id="hero-slider"></div>
-    <div class="swiper-pagination"></div>
-  </div>
-</section>
+<script>
+  // 🔑 FIREBASE CONFIG (AYNI)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
+    authDomain: "mockup-master-db.firebaseapp.com",
+    databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
+    projectId: "mockup-master-db",
+    storageBucket: "mockup-master-db.firebasestorage.app",
+    messagingSenderId: "68063883147",
+    appId: "1:68063883147:web:07debadc7efe4aeccac98e"
+  };
 
-<!-- PRODUCTS -->
-<section class="max-w-7xl mx-auto px-6 py-20">
-  <h2 class="text-4xl font-black uppercase mb-12">Shop All</h2>
-  <div id="product-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-10"></div>
-</section>
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-<!-- FOOTER -->
-<footer class="bg-black text-white py-20 mt-20">
-  <div class="max-w-7xl mx-auto px-6">
-    <p class="text-sm opacity-60">© Mockup Studio</p>
-  </div>
-</footer>
+  db.ref("products").on("value", snap => {
+    const data = snap.val();
+    const box = document.getElementById("products");
+    box.innerHTML = "";
 
-<!-- Swiper -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    if (!data) {
+      box.innerHTML = "<p>No products yet.</p>";
+      return;
+    }
 
-<!-- MAIN JS -->
-<script src="assets/index.js"></script>
+    Object.values(data).forEach(p => {
+      box.innerHTML += `
+        <div class="card">
+          <img src="${p.img}" onerror="this.style.display='none'">
+          <h3>${p.title}</h3>
+          <p>${p.price}</p>
+        </div>
+      `;
+    });
+  });
+</script>
+
 </body>
 </html>
