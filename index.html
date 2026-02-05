@@ -1,58 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCKUP STUDIO | High-End Digital Archive</title>
-    
+    <title id="site-title">MOCKUP STUDIO | High-End Digital Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://gumroad.com/js/gumroad.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
     <style>
-        /* FOOTWALL STYLE CSS */
-        body { font-family: 'Inter', sans-serif; background: #fff; color: #000; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background: #fff; color: #000; }
         .branding { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.07em; }
-        
-        /* SimSiyah ve Kalın Kategoriler */
-        #main-nav a { 
-            color: #000 !important; 
-            font-weight: 900 !important; 
-            text-transform: uppercase; 
-            font-size: 12px; 
-            letter-spacing: 0.1em;
-            transition: all 0.2s ease;
-        }
-        #main-nav a:hover { opacity: 0.4; transform: translateY(-1px); }
-
-        /* Footwall Slider */
-        .swiper { width: 100%; height: 85vh; background: #000; }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); }
-        
-        /* Product Grid & Cards */
-        .product-card { border-bottom: 1px solid #eee; padding-bottom: 2rem; transition: all 0.3s ease; }
-        .product-card:hover .img-zoom { transform: scale(1.05); }
-        .img-cont { aspect-ratio: 1/1; overflow: hidden; background: #f6f6f6; border-radius: 4px; }
-        .img-zoom { transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
-        
-        /* Buy Button - High Contrast */
-        .buy-btn-black { 
-            background: #000; color: #fff; width: 100%; padding: 1.2rem; 
-            font-size: 11px; font-weight: 900; text-transform: uppercase; 
-            letter-spacing: 0.2em; transition: 0.3s; display: block; text-align: center;
-        }
-        .buy-btn-black:hover { background: #333; }
-
-        .view { display: none; } .view.active { display: block; }
-        
-        /* Footer Aesthetics */
+        #main-nav a { color: #000 !important; font-weight: 900 !important; text-transform: uppercase; font-size: 12px; letter-spacing: 0.1em; }
+        .swiper { width: 100%; height: 85vh; background: #000; border-radius: 0 0 3rem 3rem; }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .product-card { border-bottom: 1px solid #eee; padding-bottom: 2rem; }
+        .buy-btn-black { background: #000; color: #fff; width: 100%; padding: 1.2rem; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; display: block; text-align: center; border-radius: 12px; }
         footer { background: #000; color: #fff; }
-        footer a { color: #666; transition: 0.3s; }
-        footer a:hover { color: #fff; }
+        .view { display: none; } .view.active { display: block; }
     </style>
 </head>
 <body>
@@ -60,68 +27,133 @@
     <nav class="fixed top-0 w-full z-[100] bg-white border-b border-black/5">
         <div class="max-w-[1600px] mx-auto px-8 h-20 flex justify-between items-center">
             <div class="branding text-3xl font-black uppercase cursor-pointer" onclick="location.href=location.pathname">
-                MOCKUP<span class="text-gray-200">STUDIO</span>
+                <span id="dyn-logo-main">MOCKUP</span><span id="dyn-logo-accent" class="text-gray-200 ml-1">STUDIO</span>
             </div>
-            
-            <div id="main-nav" class="hidden lg:flex gap-12 items-center">
-                </div>
-
-            <button onclick="showPage('home')" class="text-[11px] font-black uppercase tracking-widest border-2 border-black px-6 py-2 hover:bg-black hover:text-white transition">Archive</button>
+            <div id="main-nav" class="hidden lg:flex gap-12 items-center"></div>
+            <button onclick="showPage('home')" class="text-[11px] font-black uppercase tracking-widest border-2 border-black px-6 py-2 hover:bg-black hover:text-white transition">ARCHIVE</button>
         </div>
     </nav>
 
     <div id="page-home" class="view active pt-20">
-        <div class="swiper mySwiper">
-            <div class="swiper-wrapper" id="slider-content"></div>
-            <div class="swiper-pagination"></div>
-        </div>
-
+        <div class="swiper mySwiper"><div class="swiper-wrapper" id="slider-content"></div><div class="swiper-pagination"></div></div>
         <section class="max-w-[1600px] mx-auto px-8 py-24">
             <h2 class="branding text-7xl font-black mb-16 italic tracking-tighter uppercase leading-none">New Assets</h2>
-            <div id="new-arrivals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16"></div>
+            <div id="new-arrivals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"></div>
         </section>
-
         <section class="max-w-[1600px] mx-auto px-8 py-32 border-t border-gray-100">
-            <h2 class="branding text-3xl font-black mb-20 italic tracking-tighter uppercase text-center">Full Studio Archive</h2>
-            <div id="full-archive-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24"></div>
+            <h2 class="branding text-3xl font-black mb-20 italic tracking-tighter uppercase text-center">Studio Archive</h2>
+            <div id="full-archive-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12"></div>
         </section>
     </div>
 
     <div id="page-detail" class="view pt-40 pb-40">
         <div class="max-w-7xl mx-auto px-8">
-            <button onclick="showPage('home')" class="mb-12 font-black uppercase text-[10px] tracking-widest">← Back to Gallery</button>
+            <button onclick="showPage('home')" class="mb-12 font-black uppercase text-[10px] tracking-widest">← Back</button>
             <div class="grid lg:grid-cols-2 gap-24 items-start">
-                <div class="img-cont !rounded-none shadow-2xl">
-                    <img id="det-img" class="w-full h-full object-cover">
-                </div>
-                <div class="pt-4">
+                <div class="aspect-square bg-gray-100 rounded-[2rem] overflow-hidden shadow-2xl"><img id="det-img" class="w-full h-full object-cover"></div>
+                <div>
                     <span id="det-cat" class="text-[11px] font-black text-gray-300 uppercase tracking-[0.4em] mb-4 block"></span>
                     <h1 id="det-title" class="branding text-8xl font-black mb-8 leading-[0.85] tracking-tighter"></h1>
-                    <p id="det-price" class="text-4xl font-light text-gray-400 mb-12 italic tracking-tighter"></p>
-                    <div class="border-t border-black/5 pt-12 mb-12">
-                        <p id="det-desc" class="text-gray-500 leading-relaxed text-xl font-medium"></p>
-                    </div>
+                    <p id="det-price" class="text-4xl font-light text-gray-400 mb-12 italic"></p>
+                    <p id="det-desc" class="text-gray-500 leading-relaxed text-xl font-medium border-t pt-10 mb-12"></p>
                     <div id="det-buy-cont"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer class="py-32 px-8">
+    <footer class="py-32 px-8 mt-20">
         <div class="max-w-[1600px] mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-20 border-b border-white/10 pb-20">
                 <div class="lg:col-span-2">
-                    <h3 class="branding text-5xl font-black uppercase mb-8">MOCKUP<br><span class="text-white/20">STUDIO</span></h3>
-                    <p class="text-gray-500 text-xl max-w-sm font-medium">Providing high-standard digital resources for the next generation of streetwear creators.</p>
+                    <h3 class="branding text-5xl font-black uppercase mb-8" id="footer-logo">MOCKUP STUDIO</h3>
+                    <p id="footer-desc" class="text-gray-500 text-xl max-w-sm font-medium italic"></p>
                 </div>
                 <div>
-                    <p class="text-[10px] font-black uppercase tracking-[0.4em] mb-10 text-white/30">Information</p>
+                    <p class="text-[10px] font-black uppercase tracking-[0.4em] mb-10 text-white/30">Sosyal Medya</p>
                     <ul class="space-y-4 font-bold uppercase text-xs tracking-widest">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Licensing</a></li>
-                        <li><a href="#">Support</a></li>
+                        <li><a id="footer-insta" href="#" target="_blank" class="hover:text-white">Instagram</a></li>
+                        <li><a id="footer-behance" href="#" target="_blank" class="hover:text-white">Behance</a></li>
                     </ul>
                 </div>
-                <div>
-                    <p class="text-[10px] font-black uppercase tracking-[0.4em] mb-10 text-white/30">Social</p>
-                    <ul class="space-y-4 font-bold uppercase text-xs tracking-widest">
+            </div>
+            <div class="pt-10"><p class="text-[10px] font-black text-white/20 tracking-widest uppercase text-center">© 2026 Studio Archive System</p></div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        // FIREBASE BAĞLANTISI (Aynı config kullanılacak)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
+            authDomain: "mockup-master-db.firebaseapp.com",
+            databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
+            projectId: "mockup-master-db",
+            storageBucket: "mockup-master-db.firebasestorage.app",
+            messagingSenderId: "68063883147",
+            appId: "1:68063883147:web:07debadc7efe4aeccac98e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function showPage(p) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById('page-' + p).classList.add('active'); window.scrollTo(0,0); }
+
+        db.ref().on('value', snap => {
+            const data = snap.val(); if(!data) return;
+            window.allData = data;
+            
+            // Site Kimliği (Dynamic Branding)
+            const s = data.settings || {};
+            document.getElementById('dyn-logo-main').innerText = s.logo || "MOCKUP";
+            document.getElementById('dyn-logo-accent').innerText = s.logoAccent || "STUDIO";
+            document.getElementById('footer-logo').innerText = (s.logo + " " + s.logoAccent) || "MOCKUP STUDIO";
+            document.getElementById('footer-desc').innerText = s.footerDesc || "";
+            document.getElementById('footer-insta').href = s.insta || "#";
+            document.getElementById('footer-behance').href = s.behance || "#";
+
+            // Slider (Çoklu Resim)
+            if(data.hero_slider) {
+                document.getElementById('slider-content').innerHTML = Object.values(data.hero_slider).map(s => `<div class="swiper-slide"><img src="${s.img}"></div>`).join('');
+                new Swiper(".mySwiper", { autoplay: {delay: 5000}, pagination: {el: ".swiper-pagination", clickable: true}, effect: 'fade' });
+            }
+
+            // Ürünler
+            if(data.products) {
+                const prods = Object.values(data.products).reverse();
+                document.getElementById('new-arrivals-grid').innerHTML = prods.filter(p => p.featured).slice(0, 4).map(p => productHTML(p)).join('');
+                document.getElementById('full-archive-grid').innerHTML = prods.map(p => productHTML(p)).join('');
+            }
+
+            // Kategoriler
+            if(data.categories) {
+                document.getElementById('main-nav').innerHTML = Object.values(data.categories).map(c => `<a href="#" onclick="filterCat('${c}')">${c}</a>`).join('');
+            }
+            
+            if (window.GumroadOverlay) window.GumroadOverlay.reload();
+        });
+
+        function productHTML(p) {
+            const shortDesc = p.desc ? p.desc.substring(0, 50) + '...' : 'Premium Mockup Asset';
+            return `<div class="product-card"><div class="aspect-square bg-gray-50 rounded-[2rem] overflow-hidden mb-6 cursor-pointer shadow-sm hover:shadow-xl transition" onclick="openProduct('${p.id}')"><img src="${p.img}" class="w-full h-full object-cover hover:scale-110 transition duration-[2s]"></div><div class="flex justify-between items-start mb-2"><h3 class="branding text-2xl font-black uppercase tracking-tighter leading-none">${p.title}</h3><span class="font-black italic">${p.price}</span></div><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-6">${shortDesc}</p><a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="buy-btn-black">Buy on Gumroad</a></div>`;
+        }
+
+        function openProduct(id) {
+            const p = window.allData.products[id];
+            document.getElementById('det-title').innerText = p.title;
+            document.getElementById('det-price').innerText = p.price;
+            document.getElementById('det-desc').innerText = p.desc;
+            document.getElementById('det-cat').innerText = p.cat;
+            document.getElementById('det-img').src = p.img;
+            document.getElementById('det-buy-cont').innerHTML = `<a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="buy-btn-black !py-8 !text-sm">Checkout — ${p.price}</a>`;
+            showPage('detail');
+            if (window.GumroadOverlay) window.GumroadOverlay.reload();
+        }
+
+        function filterCat(c) {
+            const filtered = Object.values(window.allData.products).filter(p => p.cat === c);
+            document.getElementById('full-archive-grid').innerHTML = filtered.map(p => productHTML(p)).join('');
+            window.scrollTo({top: document.getElementById('full-archive-grid').offsetTop - 150, behavior: 'smooth'});
+        }
+    </script>
+</body>
+</html>
