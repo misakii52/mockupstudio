@@ -1,1 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER CONTROL | Mockup Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; }
+        .tab-btn.active { background: #000; color: #fff; }
+        .form-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 32px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        input, select, textarea { 
+            width: 100%; background: #f1f5f9; border: 1px solid #e2e8f0; 
+            border-radius: 12px; padding: 12px; outline: none; transition: 0.2s;
+        }
+        input:focus { border-color: #000; background: #fff; }
+    </style>
+</head>
+<body class="p-4 md:p-12">
+
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+            <div>
+                <h1 class="text-4xl font-800 tracking-tighter uppercase">Studio <span class="text-gray-400">Master</span></h1>
+                <p class="text-gray-500 font-medium">Global Store Management System</p>
+            </div>
+            <div class="flex bg-white p-1 rounded-2xl border border-gray-200">
+                <button onclick="switchTab('products')" class="tab-btn active px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition">Inventory</button>
+                <button onclick="switchTab('categories')" class="tab-btn px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition">Categories</button>
+                <button onclick="switchTab('design')" class="tab-btn px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition">UI & Slider</button>
+            </div>
+        </div>
+
+        <div id="tab-products" class="tab-content">
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <div class="form-card sticky top-8">
+                        <h2 class="text-xl font-bold mb-6 italic">Deploy New Asset</h2>
+                        <div class="space-y-4">
+                            <input id="pTitle" placeholder="Title (e.g. Heavy Boxy Tee)">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input id="pPrice" placeholder="Price ($)">
+                                <select id="pCatList"></select>
+                            </div>
+                            <input id="pSlug" placeholder="Gumroad Slug">
+                            <input id="pImg" placeholder="Main Image Path">
+                            <textarea id="pDesc" placeholder="Product Description & SEO Keywords" rows="4"></textarea>
+                            <div class="flex items-center gap-2 px-2">
+                                <input type="checkbox" id="pFeatured" class="w-4 h-4 accent-black">
+                                <label class="text-[10px] font-bold uppercase">Mark as New Arrival</label>
+                            </div>
+                            <button onclick="saveProduct()" class="w-full bg-black text-white py-4 rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-gray-800 transition">Publish to Store</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="form-card">
+                        <h2 class="text-xl font-bold mb-6 italic">Live Inventory</h2>
+                        <div id="inventory-list" class="space-y-4">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-categories" class="tab-content hidden">
+            <div class="max-w-2xl mx-auto">
+                <div class="form-card">
+                    <h2 class="text-xl font-bold mb-6">Manage Categories</h2>
+                    <div class="flex gap-2 mb-8">
+                        <input id="newCatName" placeholder="Category Name (e.g. Headwear)">
+                        <button onclick="addCategory()" class="bg-black text-white px-8 rounded-xl font-bold uppercase text-[10px]">Add</button>
+                    </div>
+                    <div id="category-list" class="space-y-2">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-design" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="form-card">
+                    <h2 class="text-xl font-bold mb-6 italic">Hero Slider (Header Altı)</h2>
+                    <p class="text-[10px] text-gray-400 mb-4 font-bold uppercase">Max 3 images recommended</p>
+                    <div class="space-y-4">
+                        <input id="slideImg" placeholder="Image Path (assets/images/slider1.jpg)">
+                        <input id="slideLink" placeholder="Redirect Link (Gumroad URL)">
+                        <button onclick="addSlide()" class="w-full border-2 border-black py-3 rounded-xl font-bold uppercase text-[10px]">Add Slide</button>
+                    </div>
+                    <div id="slider-list" class="mt-8 space-y-4"></div>
+                </div>
+
+                <div class="form-card">
+                    <h2 class="text-xl font-bold mb-6 italic">Spotlight (Weekly Deal)</h2>
+                    <div class="space-y-4">
+                        <input id="spotTitle" placeholder="Spotlight Title (e.g. BUNDLE OF THE WEEK)">
+                        <select id="spotProduct"></select>
+                        <textarea id="spotText" placeholder="Short marketing text..." rows="3"></textarea>
+                        <button onclick="updateSpotlight()" class="w-full bg-black text-white py-4 rounded-xl font-bold uppercase text-[10px]">Update Spotlight Area</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
+            authDomain: "mockup-master-db.firebaseapp.com",
+            databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
+            projectId: "mockup-master-db",
+            storageBucket: "mockup-master-db.firebasestorage.app",
+            messagingSenderId: "68063883147",
+            appId: "1:68063883147:web:07debadc7efe4aeccac98e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // --- TAB SWITCHER ---
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- CATEGORY LOGIC ---
+        function addCategory() {
+            const name = document.getElementById('newCatName').value;
+            if(!name) return;
+            db.ref('categories').push(name);
+            document.getElementById('newCatName').value = "";
+        }
+
+        db.ref('categories').on('value', snap => {
+            const cats = snap.val() ? Object.entries(snap.val()) : [];
+            const list = document.getElementById('category-list');
+            const select = document.getElementById('pCatList');
+            
+            list.innerHTML = cats.map(([id, name]) => `
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <span class="font-bold text-sm uppercase tracking-widest">${name}</span>
+                    <button onclick="db.ref('categories/${id}').remove()" class="text-red-500 font-black text-[10px]">DELETE</button>
+                </div>
+            `).join('');
+            
+            select.innerHTML = cats.map(([id, name]) => `<option value="${name}">${name}</option>`).join('');
+        });
+
+        // --- PRODUCT LOGIC ---
+        function saveProduct() {
+            const p = {
+                id: Date.now(),
+                title: document.getElementById('pTitle').value,
+                price: document.getElementById('pPrice').value,
+                cat: document.getElementById('pCatList').value,
+                slug: document.getElementById('pSlug').value,
+                img: document.getElementById('pImg').value,
+                desc: document.getElementById('pDesc').value,
+                featured: document.getElementById('pFeatured').checked
+            };
+            db.ref('products/' + p.id).set(p, () => alert("Inventory Updated!"));
+        }
+
+        db.ref('products').on('value', snap => {
+            const prods = snap.val() ? Object.values(snap.val()) : [];
+            const list = document.getElementById('inventory-list');
+            const spotSelect = document.getElementById('spotProduct');
+            
+            list.innerHTML = prods.reverse().map(p => `
+                <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <img src="${p.img}" class="w-16 h-16 object-cover rounded-xl" onerror="this.src='https://via.placeholder.com/100'">
+                        <div>
+                            <h4 class="font-bold text-sm">${p.title}</h4>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">${p.cat} • ${p.price}</p>
+                        </div>
+                    </div>
+                    <button onclick="db.ref('products/${p.id}').remove()" class="text-gray-300 hover:text-red-500 transition">Remove</button>
+                </div>
+            `).join('');
+
+            spotSelect.innerHTML = prods.map(p => `<option value="${p.id}">${p.title}</option>`).join('');
+        });
+
+        // --- SLIDER & SPOTLIGHT LOGIC ---
+        function addSlide() {
+            const slide = { img: document.getElementById('slideImg').value, link: document.getElementById('slideLink').value };
+            db.ref('hero_slider').push(slide);
+        }
+
+        db.ref('hero_slider').on('value', snap => {
+            const slides = snap.val() ? Object.entries(snap.val()) : [];
+            document.getElementById('slider-list').innerHTML = slides.map(([id, s]) => `
+                <div class="relative group">
+                    <img src="${s.img}" class="w-full h-32 object-cover rounded-2xl border">
+                    <button onclick="db.ref('hero_slider/${id}').remove()" class="absolute top-2 right-2 bg-white/90 p-2 rounded-lg text-xs font-bold text-red-500 opacity-0 group-hover:opacity-100 transition">Delete</button>
+                </div>
+            `).join('');
+        });
+
+        function updateSpotlight() {
+            const data = {
+                title: document.getElementById('spotTitle').value,
+                productId: document.getElementById('spotProduct').value,
+                text: document.getElementById('spotText').value
+            };
+            db.ref('spotlight').set(data, () => alert("Spotlight Updated!"));
+        }
+    </script>
+</body>
+</html>
