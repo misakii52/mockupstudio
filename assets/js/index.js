@@ -1,72 +1,76 @@
-alert("INDEX JS ÇALIŞIYOR");
-// GLOBAL
-let allProducts = [];
-let allCategories = [];
-let sliderItems = [];
-let sliderIndex = 0;
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// SLIDER
-function renderSlider() {
-  const slider = document.getElementById("slider");
-  if (!sliderItems.length) return;
+// 🔴 AYNI CONFIG – ADMIN PANELDE KULLANDIĞININ AYNISI
+const firebaseConfig = {
+  apiKey: "API_KEY",
+  authDomain: "PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "PROJECT_ID",
+  storageBucket: "PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
 
-  slider.innerHTML = `
-    <img src="${sliderItems[sliderIndex].img}" 
-         class="w-full h-full object-cover absolute inset-0">
-    <div class="absolute inset-0 bg-black/40 flex items-end p-6">
-      <a href="https://gumroad.com/l/${sliderItems[sliderIndex].link}"
-         target="_blank"
-         class="bg-white text-black px-6 py-3 font-bold rounded-lg">
+// Init Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// HTML elements
+const categoriesContainer = document.getElementById("categories");
+const productsContainer = document.getElementById("products");
+
+/* =========================
+   LOAD CATEGORIES
+========================= */
+onValue(ref(db, "categories"), (snapshot) => {
+  categoriesContainer.innerHTML = "";
+
+  if (!snapshot.exists()) {
+    categoriesContainer.innerHTML = "<p>No categories found.</p>";
+    return;
+  }
+
+  snapshot.forEach((child) => {
+    const category = child.val();
+
+    const div = document.createElement("div");
+    div.className =
+      "bg-white p-4 rounded shadow text-center font-medium cursor-pointer hover:bg-gray-50";
+    div.textContent = category.name;
+
+    categoriesContainer.appendChild(div);
+  });
+});
+
+/* =========================
+   LOAD PRODUCTS
+========================= */
+onValue(ref(db, "products"), (snapshot) => {
+  productsContainer.innerHTML = "";
+
+  if (!snapshot.exists()) {
+    productsContainer.innerHTML = "<p>No products found.</p>";
+    return;
+  }
+
+  snapshot.forEach((child) => {
+    const product = child.val();
+
+    const card = document.createElement("div");
+    card.className = "bg-white rounded shadow p-4";
+
+    card.innerHTML = `
+      <h3 class="text-lg font-semibold mb-2">${product.title}</h3>
+      <p class="text-gray-600 mb-2">${product.description || ""}</p>
+      <p class="font-bold mb-3">$${product.price}</p>
+      <a href="${product.link}" target="_blank"
+         class="block text-center bg-black text-white py-2 rounded hover:bg-gray-800">
          Buy on Gumroad
       </a>
-    </div>
-  `;
+    `;
 
-  sliderIndex = (sliderIndex + 1) % sliderItems.length;
-}
-
-// KATEGORİLER
-function renderCategories() {
-  const el = document.getElementById("category-list");
-  el.innerHTML = allCategories.map(cat => `
-    <button onclick="filterCategory('${cat}')"
-      class="px-4 py-2 bg-black text-white rounded-full text-sm">
-      ${cat}
-    </button>
-  `).join("");
-}
-
-// ÜRÜNLER
-function renderProducts(products) {
-  const el = document.getElementById("product-list");
-  el.innerHTML = products.map(p => `
-    <div class="bg-white rounded-xl shadow p-4">
-      <img src="${p.img}" class="rounded-lg mb-4 h-48 w-full object-cover">
-      <h3 class="font-bold">${p.title}</h3>
-      <p class="text-gray-500 text-sm mb-2">${p.desc || ""}</p>
-      <div class="flex justify-between items-center">
-        <span class="font-bold">${p.price}</span>
-        <a href="https://gumroad.com/l/${p.slug}" 
-           target="_blank"
-           class="bg-black text-white px-4 py-2 rounded">
-           Buy
-        </a>
-      </div>
-    </div>
-  `).join("");
-}
-
-// FİLTRE
-function filterCategory(cat) {
-  const filtered = allProducts.filter(p => p.cat === cat);
-  renderProducts(filtered);
-}
-
-// FIREBASE VERİ ÇEKME
-db.ref().on("value", snap => {
-  const data = snap.val();
-  if (!data) return;
-
-  // SLIDER
-  if (data.her
-
+    productsContainer.appendChild(card);
+  });
+});
