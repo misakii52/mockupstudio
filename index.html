@@ -3,113 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCKUP MASTER | High-End Digital Assets</title>
-    <meta name="description" id="meta-desc" content="Premium quality streetwear mockups. T-shirts, Hoodies and digital assets for clothing brands.">
-    
+    <title>MOCKUP MASTER | Digital Goods</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { --primary: #000; --bg: #fff; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Inter', sans-serif; background-color: #fff; color: #000; }
         .branding { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.05em; }
         .view { display: none; } .view.active { display: block; }
-        .console-input { width: 100%; border: 1px solid #eee; padding: 14px; border-radius: 12px; margin-bottom: 15px; outline: none; font-size: 14px; transition: 0.3s; }
-        .console-input:focus { border-color: #000; background: #fafafa; }
-        .product-card { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .product-card:hover { transform: translateY(-10px); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .loader { border-top-color: #000; animation: spinner 0.8s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .console-input { width: 100%; border: 1px solid #eee; padding: 12px; border-radius: 10px; margin-bottom: 10px; outline: none; }
+        .loader-spinner { border-top-color: #000; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="fixed inset-0 bg-white z-[200] flex items-center justify-center text-center">
-        <div>
-            <div class="loader w-10 h-10 border-4 border-gray-100 rounded-full mb-4 mx-auto"></div>
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Loading Studio</p>
-        </div>
+    <div id="loader" class="fixed inset-0 bg-white z-[200] flex flex-col items-center justify-center">
+        <div class="loader-spinner w-10 h-10 border-4 border-gray-100 rounded-full mb-4"></div>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Syncing with Cloud...</p>
     </div>
 
-    <header class="sticky top-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-50">
+    <header class="sticky top-0 z-[100] bg-white/90 backdrop-blur-md border-b border-gray-50">
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="branding text-2xl font-black uppercase cursor-pointer" onclick="window.location.href='/'">MOCKUP<span class="text-gray-300 font-light">MASTER</span></div>
-            <nav id="nav-cats" class="hidden md:flex gap-8 text-[11px] font-bold uppercase tracking-widest text-gray-400"></nav>
-            <div class="flex gap-6 items-center">
-                <button onclick="showPage('home')" class="text-xs font-bold uppercase tracking-widest">Shop</button>
-                <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white text-[10px] font-bold">0</div>
-            </div>
+            <div class="branding text-2xl font-black uppercase cursor-pointer" onclick="location.href=location.pathname">MOCKUP<span class="text-gray-200">MASTER</span></div>
+            <nav id="nav-cats" class="hidden md:flex gap-6 text-[11px] font-bold uppercase tracking-widest text-gray-400"></nav>
+            <button onclick="showPage('home')" class="text-xs font-bold uppercase tracking-widest">Shop</button>
         </div>
     </header>
 
     <div id="page-home" class="view active">
-        <section class="max-w-7xl mx-auto px-6 py-24">
-            <h1 class="branding text-7xl md:text-[10rem] font-black leading-[0.8] mb-12 tracking-tighter">THE<br>ARCHIVE.</h1>
-            <div class="flex flex-col md:flex-row justify-between items-end gap-8 border-b pb-12">
-                <p class="text-gray-400 text-lg max-w-sm font-medium">Curated digital resources for elite streetwear brands. 4K resolution guaranteed.</p>
-                <div class="flex gap-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    <span>Scroll to Explore</span>
-                    <span>↓</span>
-                </div>
-            </div>
+        <section class="max-w-7xl mx-auto px-6 py-20 border-b">
+            <h1 class="branding text-7xl md:text-9xl font-black leading-none mb-6">THE<br>STUDIO.</h1>
+            <p class="text-gray-400 max-w-sm font-medium">Professional assets for clothing brands.</p>
         </section>
-        <main class="max-w-7xl mx-auto px-6 pb-40 text-center md:text-left">
-            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16"></div>
+        <main class="max-w-7xl mx-auto px-6 py-20">
+            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 text-center md:text-left"></div>
         </main>
     </div>
 
-    <div id="page-detail" class="view min-h-screen">
-        <div class="max-w-7xl mx-auto px-6 py-12">
-            <div class="grid lg:grid-cols-2 gap-20">
-                <div class="space-y-4">
-                    <img id="det-main-img" class="w-full aspect-square object-cover rounded-[3rem] bg-gray-50 border border-gray-100 shadow-sm">
-                    <div id="det-thumbs" class="flex gap-4 overflow-x-auto no-scrollbar pt-2"></div>
-                </div>
-                <div class="flex flex-col justify-center">
-                    <div id="det-badge" class="mb-4"></div>
-                    <h2 id="det-title" class="branding text-6xl font-black mb-6 leading-none"></h2>
-                    <p id="det-price" class="text-2xl font-light mb-8 text-gray-500"></p>
-                    <div id="det-desc" class="text-gray-400 leading-relaxed mb-10 whitespace-pre-line border-t pt-8 text-sm font-medium"></div>
+    <div id="page-detail" class="view min-h-screen p-6">
+        <div class="max-w-7xl mx-auto py-12">
+            <div class="grid lg:grid-cols-2 gap-16">
+                <img id="det-img" class="w-full aspect-square object-cover rounded-[2rem] border shadow-sm">
+                <div>
+                    <h2 id="det-title" class="branding text-5xl font-black mb-4"></h2>
+                    <p id="det-price" class="text-2xl text-gray-400 mb-8"></p>
+                    <p id="det-desc" class="text-gray-500 mb-10 whitespace-pre-line"></p>
                     <div id="buy-btn-cont"></div>
-                    <div class="mt-12 pt-8 border-t flex flex-wrap gap-6 italic text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">
-                        <span>4K Resolution</span>
-                        <span>•</span>
-                        <span>Layered PSD</span>
-                        <span>•</span>
-                        <span>Commercial Use</span>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="page-console" class="view bg-slate-50 min-h-screen p-6 md:p-12">
-        <div class="max-w-4xl mx-auto">
-            <div id="admin-login" class="bg-white p-12 rounded-[3rem] shadow-2xl text-center border border-gray-100">
-                <h2 class="branding text-xl mb-8 font-black uppercase tracking-widest">Command Center</h2>
-                <input type="password" id="console-pass" class="console-input text-center" placeholder="Access Key">
-                <button onclick="authAdmin()" class="w-full bg-black text-white py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px]">Verify Identity</button>
+    <div id="page-console" class="view bg-gray-50 min-h-screen p-6">
+        <div class="max-w-2xl mx-auto">
+            <div id="admin-login" class="bg-white p-10 rounded-3xl shadow-xl text-center">
+                <h2 class="branding text-xl mb-6">ADMIN ACCESS</h2>
+                <input type="password" id="console-pass" class="console-input text-center" placeholder="Password">
+                <button onclick="authAdmin()" class="w-full bg-black text-white py-4 rounded-xl font-bold">LOGIN</button>
             </div>
             
-            <div id="admin-panel" class="hidden space-y-8">
-                <div class="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                    <h4 class="font-bold mb-8 text-xs uppercase tracking-widest">Deploy New Asset</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Title</label>
-                            <input id="pTitle" placeholder="Oversized Hoodie V1" class="console-input">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Price Tag</label>
-                            <input id="pPrice" placeholder="$29.00" class="console-input">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Gumroad ID</label>
-                            <input id="pSlug" placeholder="abcde" class="console-input">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-
+            <div id="admin-panel" class="hidden space-y-6">
+                <div class="bg-white p-8 rounded-3xl border shadow-sm">
+                    <h3 class="font-bold mb-6">ADD PRODUCT</h3>
+                    <input id="pTitle" placeholder="Title" class="console-input">
+                    <input id="pPrice" placeholder="Price (e.g. $25)" class="console-input">
+                    <input id="pSlug" placeholder="Gumroad Slug" class="console-input">
+                    <select id="pCat" class="console-input">
+                        <option value="T-shirts">T-shirts</option>
+                        <option value="Hoodies">Hoodies</option>
+                        <option value="Bundles">Bundles</option>
+                        <option value="Freebies">Freebies</option>
+                    </select>
+                    <input id="pImgs" placeholder="Image Path (assets/images/1.jpg)" class="console-input">
+                    <textarea id="pDesc" placeholder="Description" class="console-input h-24"></textarea>
+                    <button onclick="saveProduct()" class="w-full bg-black text-white py-4 rounded-xl font-bold">PUBLISH</button>
+                </div>
+                <div id="admin-list" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
+            authDomain: "mockup-master-db.firebaseapp.com",
+            databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
+            projectId: "mockup-master-db",
+            storageBucket: "mockup-master-db.firebasestorage.app",
+            messagingSenderId: "68063883147",
+            appId: "1:68063883147:web:07debadc7efe4aeccac98e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let products = [];
+        const categories = ["T-shirts", "Hoodies", "Bundles", "Freebies"];
+
+        // --- CORE ---
+        function showPage(p) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('page-' + p).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function authAdmin() {
+            if(document.getElementById('console-pass').value === "admin123") {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadAdminList();
+            }
+        }
+
+        // --- DB OPERATIONS ---
+        function saveProduct() {
+            const id = Date.now();
+            const p = {
+                id: id,
+                title: document.getElementById('pTitle').value,
+                price: document.getElementById('pPrice').value,
+                slug: document.getElementById('pSlug').value,
+                cat: document.getElementById('pCat').value,
+                imgs: [document.getElementById('pImgs').value],
+                desc: document.getElementById('pDesc').value
+            };
+            db.ref('products/' + id).set(p, () => {
+                alert("Live!");
+                location.reload();
+            });
+        }
+
+        function loadAdminList() {
+            db.ref('products').on('value', snap => {
+                const data = snap.val();
+                const items = data ? Object.values(data) : [];
+                document.getElementById('admin-list').innerHTML = items.map(p => `
+                    <div class="bg-white p-4 rounded-xl flex justify-between border">
+                        <span>${p.title}</span>
+                        <button onclick="db.ref('products/${p.id}').remove()" class="text-red-500 font-bold">X</button>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // --- RENDER ---
+        function loadStore() {
+            // Emniyet Kemeri: 3 saniye sonra loader'ı her türlü kapat
+            const safetyTimeout = setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+            }, 3000);
+
+            db.ref('products').on('value', snap => {
+                clearTimeout(safetyTimeout);
+                const data = snap.val();
+                products = data ? Object.values(data) : [];
+                renderHome(products);
+                document.getElementById('loader').style.display = 'none';
+            });
+        }
+
+        function renderHome(items) {
+            document.getElementById('nav-cats').innerHTML = categories.map(c => `<button onclick="filterCat('${c}')" class="hover:text-black">${c}</button>`).join('');
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = items.map(p => `
+                <div class="cursor-pointer group" onclick="openProduct(${p.id})">
+                    <div class="aspect-[4/5] overflow-hidden rounded-[2rem] bg-gray-50 border mb-4">
+                        <img src="${p.imgs[0]}" class="w-full h-full object-cover group-hover
