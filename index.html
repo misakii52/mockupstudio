@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mockup Studio</title>
+  <meta charset="UTF-8">
+  <title>Mockup Studio – Premium Mockups</title>
 
   <!-- SEO -->
-  <meta name="description" content="Premium mockup paketleri. Anında indir, Gumroad üzerinden satın al.">
+  <meta name="description" content="Premium mockup paketleri. Gumroad üzerinden güvenli satın alım.">
+  <meta name="keywords" content="mockup, psd mockup, gumroad mockup, ui kit">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Tailwind -->
@@ -19,30 +20,37 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 
-<body class="bg-gray-50">
+<body class="bg-gray-50 text-gray-900">
 
 <!-- HEADER -->
-<header class="bg-white shadow p-6 flex justify-between">
-  <h1 class="font-black text-2xl">MOCKUP<span class="text-gray-400">STUDIO</span></h1>
+<header class="bg-white shadow">
+  <div class="max-w-6xl mx-auto p-6 flex justify-between items-center">
+    <h1 class="text-2xl font-black">
+      MOCKUP<span class="text-gray-400">STUDIO</span>
+    </h1>
+  </div>
 </header>
 
 <!-- SLIDER -->
 <section class="max-w-6xl mx-auto mt-8">
-  <div id="slider" class="relative overflow-hidden rounded-xl h-64 bg-black"></div>
+  <div id="slider" class="relative h-72 rounded-2xl overflow-hidden bg-black"></div>
 </section>
 
 <!-- KATEGORİLER -->
-<section class="max-w-6xl mx-auto mt-10">
-  <h2 class="font-bold text-xl mb-4">Kategoriler</h2>
-  <div id="category-list" class="flex gap-2 flex-wrap"></div>
+<section class="max-w-6xl mx-auto mt-12">
+  <h2 class="text-xl font-bold mb-4">Kategoriler</h2>
+  <div id="category-list" class="flex flex-wrap gap-3"></div>
 </section>
 
 <!-- ÜRÜNLER -->
-<section class="max-w-6xl mx-auto mt-10 mb-20">
-  <h2 class="font-bold text-xl mb-4">Ürünler</h2>
+<section class="max-w-6xl mx-auto mt-12 mb-20">
+  <h2 class="text-xl font-bold mb-6">Ürünler</h2>
   <div id="product-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
 </section>
 
+<!-- JS -->
+<script src="assets/js/firebase.js"></script>
 <script src="assets/js/index.js"></script>
+
 </body>
 </html>
