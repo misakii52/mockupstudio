@@ -3,116 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCKUP MASTER | Premium Digital Assets</title>
+    <title>MOCKUP MASTER | Global Creative Archive</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://gumroad.com/js/gumroad.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { --accent: #000; }
-        body { font-family: 'Inter', sans-serif; background-color: #fff; color: #000; -webkit-font-smoothing: antialiased; }
+        :root { --primary: #000; --accent: #6366f1; }
+        body { font-family: 'Inter', sans-serif; background: #fff; color: var(--primary); -webkit-font-smoothing: antialiased; }
         .branding { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.04em; }
+        .swiper { width: 100%; height: 80vh; border-radius: 0 0 3rem 3rem; overflow: hidden; }
+        .swiper-slide img { width: 100%; height: 100%; object-cover: cover; }
         .view { display: none; } .view.active { display: block; }
+        .section-title { font-size: 0.7rem; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; color: #ccc; margin-bottom: 2rem; }
         
-        /* Premium Card Effect */
-        .product-card { transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid transparent; }
-        .product-card:hover { transform: translateY(-12px); border-color: #f3f3f3; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.05); }
-        
-        /* Modern Button */
-        .btn-premium { background: #000; color: #fff; transition: all 0.3s ease; border: 1px solid #000; }
-        .btn-premium:hover { background: transparent; color: #000; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #fff; }
-        ::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+        /* Premium Card */
+        .card-anim { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-anim:hover { transform: translateY(-10px); }
     </style>
 </head>
 <body>
 
-    <nav class="sticky top-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="branding text-2xl font-black uppercase cursor-pointer tracking-tighter" onclick="location.href=location.pathname">
-                MOCKUP<span class="text-gray-300">MASTER</span>
-            </div>
-            <div class="flex gap-8 items-center text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
-                <a href="#" onclick="showPage('home')" class="hover:text-black transition">Archive</a>
-                <a href="#" class="hover:text-black transition hidden md:block">License</a>
-                <a href="mailto:support@mockupmaster.com" class="hover:text-black transition">Contact</a>
+    <nav class="fixed top-0 w-full z-[100] bg-white/70 backdrop-blur-xl border-b border-gray-50">
+        <div class="max-w-[1400px] mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="branding text-2xl font-black uppercase cursor-pointer" onclick="location.href='/'">MOCKUP<span class="text-gray-200">MASTER</span></div>
+            <div id="main-nav" class="hidden lg:flex gap-10 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                </div>
+            <div class="flex items-center gap-6">
+                <button onclick="showPage('home')" class="text-[10px] font-black uppercase tracking-widest bg-black text-white px-5 py-2.5 rounded-full">Archive</button>
             </div>
         </div>
     </nav>
 
-    <div id="page-home" class="view active">
-        <header class="max-w-7xl mx-auto px-6 pt-32 pb-20">
-            <h1 class="branding text-7xl md:text-[10rem] leading-[0.85] font-black mb-10">HIGH END<br>RESOURCES.</h1>
-            <div class="flex flex-col md:flex-row justify-between items-end border-t border-gray-100 pt-10 gap-6">
-                <p class="text-gray-400 max-w-sm font-medium leading-relaxed">Curated 4K digital assets for modern streetwear brands. Industry standard quality guaranteed.</p>
-                <div class="flex gap-3">
-                    <span class="px-4 py-2 bg-gray-50 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-500">Available Now</span>
+    <div id="page-home" class="view active pt-20">
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper" id="slider-content">
+                </div>
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <section class="max-w-[1400px] mx-auto px-6 py-32">
+            <h5 class="section-title">New Arrivals</h5>
+            <div id="new-arrivals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                </div>
+        </section>
+
+        <section id="weekly-deal-section" class="bg-black text-white py-32 rounded-[4rem] mx-6 hidden">
+            <div class="max-w-[1400px] mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center">
+                <div id="spotlight-img-cont"></div>
+                <div>
+                    <span class="text-orange-500 font-black text-[10px] uppercase tracking-[0.4em]">Limited Spotlight</span>
+                    <h2 id="spot-title" class="branding text-5xl md:text-7xl font-black my-6 leading-tight"></h2>
+                    <p id="spot-desc" class="text-gray-400 text-lg mb-10 font-medium"></p>
+                    <div id="spot-btn-cont"></div>
                 </div>
             </div>
-        </header>
+        </section>
 
-        <main class="max-w-7xl mx-auto px-6 pb-40">
-            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+        <section class="max-w-[1400px] mx-auto px-6 py-40">
+            <h5 class="section-title">Full Archive</h5>
+            <div id="full-archive-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
                 </div>
-        </main>
+        </section>
     </div>
 
-    <div id="page-detail" class="view min-h-screen">
-        <div class="max-w-7xl mx-auto px-6 py-20">
-            <button onclick="showPage('home')" class="mb-12 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group">
-                <span class="group-hover:-translate-x-1 transition-transform">←</span> Back to Collection
-            </button>
-            <div class="grid lg:grid-cols-2 gap-24 items-start">
-                <div class="bg-gray-50 rounded-[3rem] overflow-hidden border border-gray-100 shadow-sm">
-                    <img id="det-img" class="w-full aspect-square object-cover transition-transform duration-700 hover:scale-110">
+    <div id="page-detail" class="view min-h-screen pt-32">
+        <div class="max-w-[1200px] mx-auto px-6">
+            <button onclick="showPage('home')" class="mb-12 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition">← Back to Gallery</button>
+            <div class="grid lg:grid-cols-2 gap-20 items-start">
+                <div class="bg-gray-50 rounded-[3rem] overflow-hidden border border-gray-100">
+                    <img id="det-img" class="w-full aspect-square object-cover">
                 </div>
-                <div class="pt-10">
-                    <div id="det-cat" class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 mb-4"></div>
-                    <h2 id="det-title" class="branding text-6xl font-black mb-6 leading-tight"></h2>
-                    <p id="det-price" class="text-3xl font-light text-gray-400 mb-10 tracking-tight"></p>
-                    <div class="border-t border-gray-100 pt-10 mb-12">
-                        <p id="det-desc" class="text-gray-500 leading-relaxed font-medium whitespace-pre-line"></p>
+                <div>
+                    <div id="det-cat" class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-300 mb-4"></div>
+                    <h2 id="det-title" class="branding text-6xl font-black mb-6 leading-none tracking-tighter"></h2>
+                    <p id="det-price" class="text-3xl font-light text-gray-400 mb-10"></p>
+                    <div class="border-t border-gray-50 pt-10 mb-10">
+                        <p id="det-desc" class="text-gray-500 leading-relaxed whitespace-pre-line text-lg"></p>
                     </div>
-                    <div id="buy-btn-cont"></div>
-                    
-                    <div class="grid grid-cols-2 gap-8 mt-16 text-[9px] font-black uppercase tracking-widest text-gray-300 border-t pt-10">
-                        <div>✓ 4K Resolution Assets</div>
-                        <div>✓ Commercial License</div>
-                        <div>✓ Instant Digital Delivery</div>
+                    <div id="det-buy-cont"></div>
+                    <div class="mt-12 grid grid-cols-2 gap-6 text-[9px] font-black uppercase tracking-widest text-gray-300 border-t pt-10">
+                        <div>✓ Industry Standard 4K</div>
                         <div>✓ Layered PSD Files</div>
+                        <div>✓ Commercial Rights</div>
+                        <div>✓ Instant Delivery</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="page-admin" class="view bg-slate-50 min-h-screen p-12">
-        <div class="max-w-xl mx-auto">
-            <div class="bg-white p-12 rounded-[2.5rem] border border-gray-100 shadow-2xl">
-                <h2 class="branding text-2xl mb-8">Asset Deployment</h2>
-                <div class="space-y-4">
-                    <input id="pTitle" placeholder="Asset Title" class="w-full bg-gray-50 border-none p-4 rounded-xl outline-none focus:ring-2 ring-black/5">
-                    <input id="pPrice" placeholder="Price (e.g. $29)" class="w-full bg-gray-50 border-none p-4 rounded-xl outline-none">
-                    <input id="pSlug" placeholder="Gumroad Slug" class="w-full bg-gray-50 border-none p-4 rounded-xl outline-none">
-                    <select id="pCat" class="w-full bg-gray-50 border-none p-4 rounded-xl outline-none">
-                        <option>T-shirts</option><option>Hoodies</option><option>Bundles</option><option>Freebies</option>
-                    </select>
-                    <input id="pImgs" placeholder="Path (assets/images/h1.jpg)" class="w-full bg-gray-50 border-none p-4 rounded-xl outline-none">
-                    <textarea id="pDesc" placeholder="Product details..." class="w-full bg-gray-50 border-none p-4 rounded-xl outline-none h-32"></textarea>
-                    <button onclick="saveProduct()" class="w-full bg-black text-white p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl">Push to Archive</button>
-                </div>
-                <div id="admin-list" class="mt-12 space-y-3 pt-10 border-t"></div>
+    <footer class="bg-white border-t border-gray-100 py-32 px-6">
+        <div class="max-w-[1400px] mx-auto text-center">
+            <div class="branding text-3xl font-black mb-8 uppercase tracking-tighter">MOCKUPMASTER</div>
+            <p class="text-gray-400 text-sm max-w-md mx-auto mb-12">The global archive for premium digital resources. Tailored for streetwear visionaries.</p>
+            <div class="flex justify-center gap-10 text-[10px] font-black uppercase tracking-widest text-gray-300">
+                <a href="#">Instagram</a>
+                <a href="#">Gumroad</a>
+                <a href="#">Terms</a>
             </div>
         </div>
-    </div>
+    </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         // --- FIREBASE SETUP ---
         const firebaseConfig = {
@@ -133,82 +131,105 @@
             window.scrollTo(0,0);
         }
 
-        // --- CORE DATABASE ENGINE ---
-        db.ref('products').on('value', snap => {
-            const data = snap.val() ? Object.values(snap.val()) : [];
-            window.products = data;
-            renderHome(data);
-            renderAdmin(data);
+        // --- CORE DATA LOAD ---
+        db.ref().on('value', snap => {
+            const data = snap.val();
+            if(!data) return;
+            
+            renderSlider(data.hero_slider);
+            renderNav(data.categories);
+            renderArrivals(data.products);
+            renderSpotlight(data.spotlight, data.products);
+            renderArchive(data.products);
+            window.storeData = data;
         });
 
-        function renderHome(items) {
-            document.getElementById('product-grid').innerHTML = items.map(p => `
-                <div class="product-card group cursor-pointer" onclick="openProduct('${p.id}')">
-                    <div class="aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-gray-50 mb-8 border border-gray-50">
-                        <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 transition duration-[1.5s]" onerror="this.src='https://via.placeholder.com/600x800?text=Mockup+Not+Found'">
-                    </div>
-                    <div class="flex justify-between items-start px-2">
-                        <div>
-                            <h3 class="branding text-2xl font-black tracking-tighter leading-none mb-2">${p.title}</h3>
-                            <p class="text-sm font-bold text-gray-300 uppercase tracking-widest">${p.price}</p>
-                        </div>
-                        <div class="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition">→</div>
-                    </div>
-                </div>
+        function renderNav(cats) {
+            if(!cats) return;
+            const catArr = Object.values(cats);
+            document.getElementById('main-nav').innerHTML = catArr.map(c => `
+                <a href="#" onclick="filterByCat('${c}')" class="hover:text-black transition">${c}</a>
             `).join('');
         }
 
-        function openProduct(id) {
-            const p = window.products.find(x => x.id == id);
-            document.getElementById('det-title').innerText = p.title;
-            document.getElementById('det-price').innerText = p.price;
-            document.getElementById('det-desc').innerText = p.desc;
-            document.getElementById('det-cat').innerText = p.cat;
-            document.getElementById('det-img').src = p.img;
+        function renderSlider(slides) {
+            if(!slides) return;
+            const slideArr = Object.values(slides);
+            document.getElementById('slider-content').innerHTML = slideArr.map(s => `
+                <div class="swiper-slide cursor-pointer" onclick="window.open('${s.link}')">
+                    <img src="${s.img}">
+                </div>
+            `).join('');
             
-            // GUMROAD OVERLAY INTEGRATION
-            document.getElementById('buy-btn-cont').innerHTML = `
-                <a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="gumroad-button block w-full bg-black text-white text-center py-7 rounded-3xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-black/10 hover:bg-gray-800 transition">
-                    Purchase Asset — ${p.price}
-                </a>
-            `;
-            showPage('detail');
-            // Re-trigger Gumroad script to detect the new link
-            if (window.GumroadOverlay) window.GumroadOverlay.reload();
-        }
-
-        // --- ADMIN FUNCTIONS ---
-        function saveProduct() {
-            const id = Date.now();
-            const data = {
-                id: id,
-                title: document.getElementById('pTitle').value,
-                price: document.getElementById('pPrice').value,
-                slug: document.getElementById('pSlug').value,
-                cat: document.getElementById('pCat').value,
-                img: document.getElementById('pImgs').value,
-                desc: document.getElementById('pDesc').value
-            };
-            db.ref('products/' + id).set(data, () => {
-                alert("Deployed to Live Server!");
-                showPage('home');
+            new Swiper(".mySwiper", {
+                autoplay: { delay: 4000 },
+                pagination: { el: ".swiper-pagination", clickable: true },
+                effect: "fade"
             });
         }
 
-        function renderAdmin(items) {
-            document.getElementById('admin-list').innerHTML = items.map(p => `
-                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl text-xs font-bold uppercase tracking-widest">
-                    <span>${p.title}</span>
-                    <button onclick="firebase.database().ref('products/${p.id}').remove()" class="text-red-400">Remove</button>
-                </div>
-            `).join('');
+        function renderArrivals(prods) {
+            if(!prods) return;
+            const items = Object.values(prods).filter(p => p.featured).slice(0, 4);
+            document.getElementById('new-arrivals-grid').innerHTML = items.map(p => productCard(p)).join('');
         }
 
-        // Secret access to admin
-        window.addEventListener('keydown', (e) => {
-            if(e.key === 'A' && e.altKey) showPage('admin');
-        });
-        if(new URLSearchParams(window.location.search).has('admin')) showPage('admin');
+        function renderArchive(prods) {
+            if(!prods) return;
+            const items = Object.values(prods);
+            document.getElementById('full-archive-grid').innerHTML = items.map(p => productCard(p)).join('');
+        }
+
+        function renderSpotlight(spot, prods) {
+            if(!spot || !prods) return;
+            const p = prods[spot.productId];
+            if(!p) return;
+            
+            document.getElementById('weekly-deal-section').classList.remove('hidden');
+            document.getElementById('spot-title').innerText = spot.title;
+            document.getElementById('spot-desc').innerText = spot.text;
+            document.getElementById('spotlight-img-cont').innerHTML = `<img src="${p.img}" class="rounded-[3rem] w-full shadow-2xl">`;
+            document.getElementById('spot-btn-cont').innerHTML = `
+                <a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="inline-block bg-white text-black px-12 py-6 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-500 hover:text-white transition">Get Deal — ${p.price}</a>
+            `;
+            if (window.GumroadOverlay) window.GumroadOverlay.reload();
+        }
+
+        function productCard(p) {
+            return `
+                <div class="card-anim group cursor-pointer" onclick="openProduct('${p.id}')">
+                    <div class="aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-gray-50 mb-6">
+                        <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 transition duration-[1.5s]">
+                    </div>
+                    <h3 class="branding text-xl font-black uppercase tracking-tighter mb-1">${p.title}</h3>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">${p.cat}</span>
+                        <span class="font-bold text-sm text-gray-900">${p.price}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openProduct(id) {
+            const p = window.storeData.products[id];
+            document.getElementById('det-title').innerText = p.title;
+            document.getElementById('det-price').innerText = p.price;
+            document.getElementById('det-cat').innerText = p.cat;
+            document.getElementById('det-desc').innerText = p.desc;
+            document.getElementById('det-img').src = p.img;
+            document.getElementById('det-buy-cont').innerHTML = `
+                <a href="https://gumroad.com/l/${p.slug}" data-gumroad-overlay-checkout="true" class="block w-full bg-black text-white text-center py-7 rounded-3xl font-black uppercase tracking-widest text-[10px] shadow-2xl hover:bg-gray-800 transition">Purchase Archive — ${p.price}</a>
+            `;
+            showPage('detail');
+            if (window.GumroadOverlay) window.GumroadOverlay.reload();
+        }
+
+        function filterByCat(c) {
+            const allProds = Object.values(window.storeData.products);
+            const filtered = allProds.filter(p => p.cat === c);
+            document.getElementById('full-archive-grid').innerHTML = filtered.map(p => productCard(p)).join('');
+            showPage('home');
+        }
 
     </script>
 </body>
