@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCKUP MASTER | High-End Digital Goods</title>
-    <meta name="description" id="meta-desc" content="Premium streetwear mockups for clothing brands. High-quality hoodies, t-shirts, and caps. Instant download via Gumroad.">
+    <title>MOCKUP MASTER | High-End Digital Assets</title>
+    <meta name="description" id="meta-desc" content="Premium quality streetwear mockups. T-shirts, Hoodies and digital assets for clothing brands.">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
     
@@ -13,41 +14,51 @@
 
     <style>
         :root { --primary: #000; --bg: #fff; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--primary); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--primary); -webkit-font-smoothing: antialiased; }
         .branding { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.05em; }
         .view { display: none; } .view.active { display: block; }
-        .console-input { width: 100%; border: 1px solid #ddd; padding: 14px; border-radius: 12px; margin-bottom: 15px; outline: none; font-size: 14px; }
-        .product-card { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .product-card:hover { transform: translateY(-8px); }
+        .console-input { width: 100%; border: 1px solid #eee; padding: 14px; border-radius: 12px; margin-bottom: 15px; outline: none; font-size: 14px; transition: 0.3s; }
+        .console-input:focus { border-color: #000; background: #fafafa; }
+        .product-card { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .product-card:hover { transform: translateY(-10px); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .loader { border-top-color: #000; animation: spinner 0.6s linear infinite; }
+        .loader { border-top-color: #000; animation: spinner 0.8s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="fixed inset-0 bg-white z-[200] flex items-center justify-center">
-        <div class="loader w-12 h-12 border-4 border-gray-200 rounded-full"></div>
+    <div id="loader" class="fixed inset-0 bg-white z-[200] flex items-center justify-center text-center">
+        <div>
+            <div class="loader w-10 h-10 border-4 border-gray-100 rounded-full mb-4 mx-auto"></div>
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Loading Studio</p>
+        </div>
     </div>
 
-    <header class="sticky top-0 z-[100] bg-white/90 backdrop-blur-xl border-b border-gray-100">
+    <header class="sticky top-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-50">
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="branding text-2xl font-black uppercase cursor-pointer" onclick="showPage('home')">MOCKUP<span class="text-gray-300 font-light">MASTER</span></div>
+            <div class="branding text-2xl font-black uppercase cursor-pointer" onclick="window.location.href='/'">MOCKUP<span class="text-gray-300 font-light">MASTER</span></div>
             <nav id="nav-cats" class="hidden md:flex gap-8 text-[11px] font-bold uppercase tracking-widest text-gray-400"></nav>
             <div class="flex gap-6 items-center">
-                <button onclick="showPage('home')" class="text-xs font-bold uppercase tracking-widest">Collections</button>
+                <button onclick="showPage('home')" class="text-xs font-bold uppercase tracking-widest">Shop</button>
                 <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white text-[10px] font-bold">0</div>
             </div>
         </div>
     </header>
 
     <div id="page-home" class="view active">
-        <section class="max-w-7xl mx-auto px-6 py-24 text-center md:text-left">
-            <h1 class="branding text-6xl md:text-9xl font-black leading-[0.85] mb-8">DIGITAL<br>RESOURCES.</h1>
-            <p class="text-gray-400 text-lg max-w-lg font-medium">Industry-standard streetwear mockups for high-performance design. Instant delivery.</p>
+        <section class="max-w-7xl mx-auto px-6 py-24">
+            <h1 class="branding text-7xl md:text-[10rem] font-black leading-[0.8] mb-12 tracking-tighter">THE<br>ARCHIVE.</h1>
+            <div class="flex flex-col md:flex-row justify-between items-end gap-8 border-b pb-12">
+                <p class="text-gray-400 text-lg max-w-sm font-medium">Curated digital resources for elite streetwear brands. 4K resolution guaranteed.</p>
+                <div class="flex gap-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <span>Scroll to Explore</span>
+                    <span>↓</span>
+                </div>
+            </div>
         </section>
-        <main class="max-w-7xl mx-auto px-6 pb-40">
-            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12"></div>
+        <main class="max-w-7xl mx-auto px-6 pb-40 text-center md:text-left">
+            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16"></div>
         </main>
     </div>
 
@@ -55,222 +66,50 @@
         <div class="max-w-7xl mx-auto px-6 py-12">
             <div class="grid lg:grid-cols-2 gap-20">
                 <div class="space-y-4">
-                    <img id="det-main-img" class="w-full aspect-square object-cover rounded-[2.5rem] bg-gray-50 border shadow-sm">
+                    <img id="det-main-img" class="w-full aspect-square object-cover rounded-[3rem] bg-gray-50 border border-gray-100 shadow-sm">
                     <div id="det-thumbs" class="flex gap-4 overflow-x-auto no-scrollbar pt-2"></div>
                 </div>
                 <div class="flex flex-col justify-center">
                     <div id="det-badge" class="mb-4"></div>
-                    <h2 id="det-title" class="branding text-6xl font-black mb-4 leading-tight"></h2>
-                    <p id="det-price" class="text-2xl font-light mb-8 text-gray-600"></p>
-                    <div id="det-desc" class="text-gray-500 leading-relaxed mb-10 whitespace-pre-line border-t pt-8 text-sm"></div>
+                    <h2 id="det-title" class="branding text-6xl font-black mb-6 leading-none"></h2>
+                    <p id="det-price" class="text-2xl font-light mb-8 text-gray-500"></p>
+                    <div id="det-desc" class="text-gray-400 leading-relaxed mb-10 whitespace-pre-line border-t pt-8 text-sm font-medium"></div>
                     <div id="buy-btn-cont"></div>
-                    <div class="mt-12 pt-8 border-t flex flex-wrap gap-6 italic text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        <span>Commercial License Included</span>
+                    <div class="mt-12 pt-8 border-t flex flex-wrap gap-6 italic text-[9px] font-black text-gray-300 uppercase tracking-[0.2em]">
+                        <span>4K Resolution</span>
                         <span>•</span>
-                        <span>4K Resolution Assets</span>
+                        <span>Layered PSD</span>
                         <span>•</span>
-                        <span>Instant Access</span>
+                        <span>Commercial Use</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="page-console" class="view bg-gray-50 min-h-screen p-6 md:p-12">
+    <div id="page-console" class="view bg-slate-50 min-h-screen p-6 md:p-12">
         <div class="max-w-4xl mx-auto">
-            <div id="admin-login" class="bg-white p-12 rounded-[3rem] shadow-2xl text-center border">
-                <h2 class="branding text-xl mb-8 font-black uppercase tracking-widest">System Access</h2>
-                <input type="password" id="console-pass" class="console-input text-center" placeholder="Security Key">
-                <button onclick="authAdmin()" class="w-full bg-black text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs">Unlock</button>
+            <div id="admin-login" class="bg-white p-12 rounded-[3rem] shadow-2xl text-center border border-gray-100">
+                <h2 class="branding text-xl mb-8 font-black uppercase tracking-widest">Command Center</h2>
+                <input type="password" id="console-pass" class="console-input text-center" placeholder="Access Key">
+                <button onclick="authAdmin()" class="w-full bg-black text-white py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px]">Verify Identity</button>
             </div>
             
             <div id="admin-panel" class="hidden space-y-8">
-                <div class="bg-black text-white p-8 rounded-3xl flex justify-between items-center">
-                    <h3 class="branding font-black uppercase tracking-widest">Master Dashboard</h3>
-                    <button onclick="location.reload()" class="text-[10px] opacity-60">Logout</button>
-                </div>
-
-                <div class="bg-white p-10 rounded-[2.5rem] border shadow-sm space-y-4">
-                    <h4 class="font-bold border-b pb-4 mb-4 text-xs uppercase tracking-widest">New Asset Entry</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input id="pTitle" placeholder="Title" class="console-input">
-                        <input id="pPrice" placeholder="Price (e.g. $29)" class="console-input">
-                        <input id="pSlug" placeholder="Gumroad Slug" class="console-input">
-                        <select id="pCat" class="console-input"></select>
-                    </div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <input type="checkbox" id="pFree"> <label class="text-xs font-bold uppercase tracking-widest">Mark as Freebie</label>
-                    </div>
-                    <textarea id="pImgs" placeholder="Images (comma separated paths: assets/images/hero.jpg, ...)" class="console-input h-20"></textarea>
-                    <textarea id="pDesc" placeholder="Product Description & SEO Keywords" class="console-input h-32"></textarea>
-                    <button onclick="saveToFirebase()" class="w-full bg-black text-white py-5 rounded-2xl font-bold uppercase tracking-widest shadow-xl shadow-gray-200">Publish Asset</button>
-                </div>
-
-                <div class="bg-white p-10 rounded-[2.5rem] border shadow-sm">
-                    <h4 class="font-bold border-b pb-4 mb-6 text-xs uppercase tracking-widest">Live Inventory</h4>
-                    <div id="admin-list" class="space-y-4"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-black text-white py-40 px-6 mt-20">
-        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-20">
-            <div class="col-span-2 space-y-6">
-                <h3 class="branding text-3xl font-black italic">MOCKUPMASTER.</h3>
-                <p class="text-gray-500 max-w-sm text-sm">Industry-standard digital resources for modern designers. Quality over quantity, always.</p>
-            </div>
-            <div>
-                <h4 class="text-[10px] font-bold uppercase tracking-widest mb-8 text-gray-500">Shop</h4>
-                <ul id="footer-cats" class="space-y-4 text-xs font-bold uppercase tracking-widest"></ul>
-            </div>
-            <div>
-                <h4 class="text-[10px] font-bold uppercase tracking-widest mb-8 text-gray-500">Newsletter</h4>
-                <div class="flex gap-2 border-b border-gray-800 pb-2">
-                    <input type="text" placeholder="Your Email" class="bg-transparent py-2 w-full outline-none text-xs">
-                    <button class="text-[10px] font-black uppercase">Join</button>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // --- FIREBASE CONFIGURATION ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
-            authDomain: "mockup-master-db.firebaseapp.com",
-            databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
-            projectId: "mockup-master-db",
-            storageBucket: "mockup-master-db.firebasestorage.app",
-            messagingSenderId: "68063883147",
-            appId: "1:68063883147:web:07debadc7efe4aeccac98e"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // --- STATE ---
-        let categories = ["T-shirts", "Hoodies", "Bundles", "Freebies"];
-        let products = [];
-
-        // --- CORE FUNCTIONS ---
-        function showPage(p) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('page-' + p).classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        function authAdmin() {
-            if(document.getElementById('console-pass').value === "admin123") {
-                document.getElementById('admin-login').classList.add('hidden');
-                document.getElementById('admin-panel').classList.remove('hidden');
-                refreshAdminList();
-            } else { alert("Access Denied."); }
-        }
-
-        // --- DATABASE OPERATIONS ---
-        function saveToFirebase() {
-            const p = {
-                id: Date.now(),
-                title: document.getElementById('pTitle').value,
-                price: document.getElementById('pPrice').value,
-                slug: document.getElementById('pSlug').value,
-                cat: document.getElementById('pCat').value,
-                desc: document.getElementById('pDesc').value,
-                isFree: document.getElementById('pFree').checked,
-                imgs: document.getElementById('pImgs').value.split(',').map(s => s.trim())
-            };
-            if(!p.title || !p.slug) return alert("Fill required fields.");
-            
-            db.ref('products/' + p.id).set(p, (err) => {
-                if(err) alert("Error: " + err);
-                else { 
-                    alert("Asset Live!"); 
-                    document.querySelectorAll('.console-input').forEach(i => i.value = "");
-                    refreshAdminList();
-                }
-            });
-        }
-
-        function refreshAdminList() {
-            db.ref('products').on('value', snap => {
-                const data = snap.val();
-                products = data ? Object.values(data) : [];
-                document.getElementById('admin-list').innerHTML = products.map(p => `
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border">
-                        <div class="flex items-center gap-4">
-                            <img src="${p.imgs[0]}" class="w-12 h-12 object-cover rounded-xl">
-                            <div><p class="font-bold text-sm">${p.title}</p><p class="text-[10px] text-gray-400 uppercase tracking-widest">${p.cat}</p></div>
-                        </div>
-                        <button onclick="deleteProduct(${p.id})" class="text-red-500 text-[10px] font-black uppercase">Delete</button>
-                    </div>
-                `).join('');
-                document.getElementById('pCat').innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
-            });
-        }
-
-        function deleteProduct(id) {
-            if(confirm("Permanently delete this asset?")) db.ref('products/' + id).remove();
-        }
-
-        // --- FRONTEND RENDER ---
-        function loadStore() {
-            db.ref('products').on('value', snap => {
-                const data = snap.val();
-                products = data ? Object.values(data) : [];
-                renderHome();
-                document.getElementById('loader').style.display = 'none';
-            });
-        }
-
-        function renderHome() {
-            const grid = document.getElementById('product-grid');
-            document.getElementById('nav-cats').innerHTML = categories.map(c => `<button onclick="filterCat('${c}')" class="hover:text-black transition">${c}</button>`).join('');
-            document.getElementById('footer-cats').innerHTML = categories.map(c => `<li><a href="#" class="hover:text-white transition">${c}</a></li>`).join('');
-            
-            grid.innerHTML = products.map(p => `
-                <div class="product-card group cursor-pointer" onclick="openProduct(${p.id})">
-                    <div class="aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-gray-50 border border-gray-100 mb-6">
-                        <img src="${p.imgs[0]}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                    </div>
-                    <div class="flex justify-between items-start">
+                <div class="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm">
+                    <h4 class="font-bold mb-8 text-xs uppercase tracking-widest">Deploy New Asset</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h3 class="branding text-xl font-black">${p.title}</h3>
-                            <p class="text-sm font-medium text-gray-400">${p.isFree ? 'FREE' : p.price}</p>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Title</label>
+                            <input id="pTitle" placeholder="Oversized Hoodie V1" class="console-input">
                         </div>
-                        ${p.isFree ? '<span class="bg-black text-white text-[8px] font-black px-2 py-1 rounded-full uppercase">Freebie</span>' : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function openProduct(id) {
-            const p = products.find(x => x.id === id);
-            document.getElementById('det-title').innerText = p.title;
-            document.getElementById('det-price').innerText = p.isFree ? "FREE DOWNLOAD" : p.price;
-            document.getElementById('det-cat').innerText = p.cat;
-            document.getElementById('det-desc').innerText = p.desc;
-            document.getElementById('det-main-img').src = p.imgs[0];
-            document.getElementById('det-badge').innerHTML = p.isFree ? '<span class="bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Digital Freebie</span>' : '';
-            
-            document.getElementById('det-thumbs').innerHTML = p.imgs.map(img => `
-                <img src="${img}" onclick="document.getElementById('det-main-img').src='${img}'" 
-                     class="w-24 h-24 object-cover rounded-[1.5rem] border cursor-pointer hover:border-black transition shrink-0 shadow-sm">
-            `).join('');
-
-            document.getElementById('buy-btn-cont').innerHTML = `
-                <a href="https://gumroad.com/l/${p.slug}" target="_blank" class="block w-full bg-black text-white text-center py-6 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-900 transition shadow-2xl shadow-gray-200">
-                    ${p.isFree ? 'Get For Free' : 'Purchase Asset'}
-                </a>
-            `;
-            showPage('detail');
-        }
-
-        // --- START ---
-        window.onload = () => {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('console')) showPage('console');
-            loadStore();
-        };
-    </script>
-</body>
-</html>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Price Tag</label>
+                            <input id="pPrice" placeholder="$29.00" class="console-input">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Gumroad ID</label>
+                            <input id="pSlug" placeholder="abcde" class="console-input">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-
