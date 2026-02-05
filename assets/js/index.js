@@ -1,3 +1,4 @@
+alert("INDEX JS ÇALIŞIYOR");
 // GLOBAL
 let allProducts = [];
 let allCategories = [];
