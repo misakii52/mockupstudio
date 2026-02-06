@@ -1,131 +1,77 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kategori Yönetimi</title>
-    <link rel="stylesheet" href="../css/admin.css">
-</head>
-<body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <!-- Sidebar içeriği -->
-        </aside>
+import { db } from './firebase-config.js';
+import { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        <!-- Main Content -->
-        <main class="admin-main">
-            <header class="admin-header">
-                <h1>Kategori Yönetimi</h1>
-                <button class="btn-logout" id="logoutBtn">Çıkış Yap</button>
-            </header>
+// --- KATEGORİ İŞLEMLERİ ---
+export const handleCategories = () => {
+    const categoryForm = document.getElementById('categoryForm');
+    const categoryList = document.getElementById('categoryList');
+    if (!categoryForm) return;
 
-            <!-- Kategori Form -->
-            <form id="categoryForm">
-                <input type="hidden" id="categoryId">
-                
-                <div class="form-group">
-                    <label for="categoryName">Kategori Adı *</label>
-                    <input type="text" id="categoryName" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="categoryOrder">Sıra</label>
-                    <input type="number" id="categoryOrder" class="form-control" value="0">
-                </div>
-                
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="inHeader"> Header'da göster
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="inFooter"> Footer'da göster
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="isActive" checked> Aktif
-                    </label>
-                </div>
-                
-                <button type="submit" class="btn-primary">Kategoriyi Kaydet</button>
-            </form>
-
-            <!-- Kategori Listesi -->
-            <div id="categoriesList"></div>
-        </main>
-    </div>
-
-    <!-- Firebase ve Admin JS -->
-    <script type="module" src="../js/firebase-config.js"></script>
-    <script type="module" src="../js/admin.js"></script>
-    
-    <script type="module">
-        import { auth, onAuthStateChanged } from '../js/firebase-config.js';
-        
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-            } else {
-                // Kategorileri yükle
-                const categories = await adminFirestore.loadCollection('categories', renderCategories);
-                
-                // Form submit
-                document.getElementById('categoryForm').addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    await adminCategories.saveCategory();
-                });
-            }
+    // Gerçek zamanlı dinle ve listele
+    const q = query(collection(db, "categories"), orderBy("order", "asc"));
+    onSnapshot(q, (snapshot) => {
+        categoryList.innerHTML = '';
+        snapshot.forEach((docSnap) => {
+            const cat = docSnap.data();
+            categoryList.innerHTML += `
+                <tr>
+                    <td>${cat.name}</td>
+                    <td>${cat.order}</td>
+                    <td><button onclick="deleteItem('categories', '${docSnap.id}')">Sil</button></td>
+                </tr>`;
         });
-        
-        function renderCategories(categories) {
-            const container = document.getElementById('categoriesList');
-            if (!container) return;
-            
-            let html = '<h2>Kategori Listesi</h2>';
-            
-            if (categories.length === 0) {
-                html += '<p>Henüz kategori yok.</p>';
-            } else {
-                html += '<table class="table"><thead><tr><th>Ad</th><th>Sıra</th><th>Header</th><th>Footer</th><th>Durum</th><th>İşlemler</th></tr></thead><tbody>';
-                
-                categories.forEach(category => {
-                    html += `
-                        <tr>
-                            <td>${category.name}</td>
-                            <td>${category.order || 0}</td>
-                            <td>${category.inHeader ? '✓' : '✗'}</td>
-                            <td>${category.inFooter ? '✓' : '✗'}</td>
-                            <td>${category.isActive !== false ? 'Aktif' : 'Pasif'}</td>
-                            <td>
-                                <button class="btn-edit" onclick="editCategory('${category.id}')">Düzenle</button>
-                                <button class="btn-danger" onclick="deleteCategory('${category.id}')">Sil</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                html += '</tbody></table>';
-            }
-            
-            container.innerHTML = html;
-        }
-        
-        // Global fonksiyonlar
-        window.editCategory = async function(categoryId) {
-            await adminCategories.loadCategoryForm(categoryId);
-            document.getElementById('categoryForm').scrollIntoView();
-        };
-        
-        window.deleteCategory = async function(categoryId) {
-            await adminFirestore.deleteDocument('categories', categoryId, () => {
-                location.reload();
+    });
+
+    // Kategori Ekle
+    categoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            await addDoc(collection(db, "categories"), {
+                name: document.getElementById('categoryName').value,
+                order: parseInt(document.getElementById('categoryOrder').value) || 0,
+                inHeader: document.getElementById('inHeader').checked,
+                isActive: true
             });
-        };
-    </script>
-</body>
-</html>
+            categoryForm.reset();
+        } catch (err) { alert("Hata: " + err.message); }
+    });
+};
+
+// --- ÜRÜN İŞLEMLERİ ---
+export const handleProducts = () => {
+    const productForm = document.getElementById('productForm');
+    const pCategory = document.getElementById('pCategory');
+    if (!productForm) return;
+
+    // Ürün formundaki kategori seçim kutusunu doldur
+    onSnapshot(collection(db, "categories"), (snapshot) => {
+        pCategory.innerHTML = '<option value="">Seçiniz...</option>';
+        snapshot.forEach((doc) => {
+            pCategory.innerHTML += `<option value="${doc.id}">${doc.data().name}</option>`;
+        });
+    });
+
+    // Ürün Ekle
+    productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            await addDoc(collection(db, "products"), {
+                title: document.getElementById('pName').value,
+                price: parseFloat(document.getElementById('pPrice').value),
+                categoryId: pCategory.value,
+                categoryName: pCategory.options[pCategory.selectedIndex].text,
+                imageUrl: document.getElementById('pImg').value,
+                createdAt: new Date()
+            });
+            productForm.reset();
+            alert("Ürün eklendi!");
+        } catch (err) { alert("Hata: " + err.message); }
+    });
+};
+
+// Global silme fonksiyonu
+window.deleteItem = async (col, id) => {
+    if (confirm('Silmek istediğine emin misin?')) {
+        await deleteDoc(doc(db, col, id));
+    }
+};
