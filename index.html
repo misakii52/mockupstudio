@@ -3,132 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STUDIO ARCHIVE</title>
+    <title>STUDIO ARCHIVE | Digital Assets</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://gumroad.com/js/gumroad.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background: #fff; }
-        .product-grid { display: grid; grid-template-cols: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; }
-        .nav-link { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
-        .search-input { border: none; border-bottom: 1px solid #000; outline: none; width: 0; transition: 0.4s; opacity: 0; }
-        .search-active .search-input { width: 200px; opacity: 1; margin-left: 10px; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #ffffff; 
+            color: #000000;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Nav Link Styles */
+        .nav-link { 
+            font-size: 11px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 0.15em; 
+            cursor: pointer; 
+            transition: opacity 0.3s;
+        }
+        .nav-link:hover { opacity: 0.5; }
+
+        /* Search Bar Animation */
+        .search-input { 
+            width: 0; opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-bottom: 2px solid #000; outline: none; font-weight: 600;
+        }
+        .search-active .search-input { width: 200px; opacity: 1; margin-left: 12px; }
+
+        /* Product Card */
+        .product-card img { transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+        .product-card:hover img { transform: scale(1.04); }
+        
+        /* Custom Loading */
+        #loader { transition: opacity 0.5s; }
     </style>
 </head>
 <body>
-    <nav class="sticky top-0 z-50 bg-white border-b border-gray-100 px-8 py-6">
-        <div class="max-w-[1400px] mx-auto flex justify-between items-center">
-            <div class="text-2xl font-black tracking-tighter cursor-pointer" onclick="window.location.href='index.html'">STUDIO.</div>
+
+    <nav class="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-[1500px] mx-auto px-8 h-24 flex justify-between items-center">
+            <div class="text-2xl font-black tracking-tighter uppercase italic cursor-pointer" onclick="window.location.reload()">
+                STUDIO<span class="text-gray-200">.</span>
+            </div>
             
-            <div class="flex items-center gap-8">
-                <div id="header-menu" class="hidden md:flex gap-6 items-center">
-                    <a onclick="loadProducts()" class="nav-link">Shop All</a>
-                </div>
-                <div id="search-box" class="flex items-center">
-                    <button onclick="document.getElementById('search-box').classList.toggle('search-active')" class="nav-link">Search</button>
-                    <input type="text" id="main-search" class="search-input" placeholder="Type to find..." onkeyup="filterSearch(this.value)">
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-[1400px] mx-auto px-8 py-20">
-        <header class="mb-16">
-            <h1 id="page-title" class="text-5xl font-black uppercase italic tracking-tighter">Shop All</h1>
-            <p id="category-count" class="text-gray-400 font-bold mt-2 text-xs uppercase tracking-widest">0 Products</p>
-        </header>
-
-        <div id="product-list" class="product-grid">
-            </div>
-    </main>
-
-    <footer class="bg-black text-white py-20 px-8 mt-40">
-        <div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div class="md:col-span-2">
-                <h2 class="text-3xl font-black italic mb-6" id="footer-logo">STUDIO.</h2>
-                <p class="text-gray-500 max-w-sm" id="footer-about">Premium digital assets for modern creators.</p>
-            </div>
-            <div>
-                <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 mb-6">Categories</h4>
-                <div id="footer-cats" class="flex flex-col gap-3 text-sm font-bold text-gray-400 uppercase"></div>
-            </div>
-            <div>
-                <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 mb-6">Social</h4>
-                <div id="footer-socials" class="flex flex-col gap-3 text-sm font-bold text-gray-400 uppercase"></div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="firebase-config.js"></script>
-    <script>
-        let allItems = [];
-
-        function init() {
-            // Menü ve Kategorileri Yükle
-            db.ref('categories').on('value', snap => {
-                const cats = snap.val() ? Object.values(snap.val()) : [];
-                const headerMenu = document.getElementById('header-menu');
-                const footerCats = document.getElementById('footer-cats');
+            <div class="flex items-center gap-10">
+                <div id="dynamic-menu" class="hidden lg:flex gap-8 items-center border-r border-gray-100 pr-10">
+                    <a onclick="fetchAllProducts()" class="nav-link">Shop All</a>
+                    </div>
                 
-                cats.filter(c => c.inHeader).forEach(c => {
-                    headerMenu.innerHTML += `<a onclick="filterByCat('${c.name}')" class="nav-link">${c.name}</a>`;
-                });
-
-                cats.filter(c => c.inFooter).forEach(c => {
-                    footerCats.innerHTML += `<a onclick="filterByCat('${c.name}')" class="hover:text-white cursor-pointer">${c.name}</a>`;
-                });
-            });
-
-            // Ürünleri Yükle
-            db.ref('products').on('value', snap => {
-                allItems = snap.val() ? Object.values(snap.val()) : [];
-                loadProducts(allItems);
-            });
-
-            // Ayarları Yükle
-            db.ref('settings').on('value', snap => {
-                const s = snap.val() || {};
-                if(s.footer) {
-                    document.getElementById('footer-about').innerText = s.footer.about;
-                    // Sosyal linkleri buraya ekleyebilirsin
-                }
-            });
-        }
-
-        function loadProducts(items = allItems) {
-            const container = document.getElementById('product-list');
-            document.getElementById('category-count').innerText = `${items.length} Products`;
-            
-            container.innerHTML = items.map(p => `
-                <div class="group cursor-pointer" onclick="window.location.href='product.html?id=${p.id}'">
-                    <div class="aspect-square bg-gray-50 overflow-hidden mb-6 rounded-lg">
-                        <img src="${p.images ? p.images[0] : ''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                    </div>
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-black uppercase text-lg italic tracking-tighter">${p.title}</h3>
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${p.category}</p>
-                        </div>
-                        <span class="font-black italic text-sm">$${p.price}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterByCat(catName) {
-            document.getElementById('page-title').innerText = catName;
-            const filtered = allItems.filter(p => p.category === catName);
-            loadProducts(filtered);
-        }
-
-        function filterSearch(q) {
-            const filtered = allItems.filter(p => p.title.toLowerCase().includes(q.toLowerCase()));
-            loadProducts(filtered);
-        }
-
-        init();
-    </script>
-</body>
-</html>
+                <div id="search-wrapper" class="flex items-center">
+                    <button onclick="toggleSearch()" class="nav-link flex items-center gap-2">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="
