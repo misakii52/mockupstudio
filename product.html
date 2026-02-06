@@ -2,60 +2,125 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>PRODUCT DETAIL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASSET DETAIL | Studio Archive</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://gumroad.com/js/gumroad.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #fff; }
+        .gallery-container { position: sticky; top: 120px; }
+        .thumb-btn { opacity: 0.4; transition: 0.3s; cursor: pointer; border-radius: 8px; overflow: hidden; }
+        .thumb-btn.active { opacity: 1; border: 2px solid #000; }
+        .prose img { border-radius: 1rem; margin: 2rem 0; }
+        .buy-sticky { position: sticky; bottom: 2rem; z-index: 50; }
+    </style>
 </head>
-<body class="bg-white">
-    <nav class="p-8"><a href="index.html" class="font-black uppercase text-xs tracking-widest">← Back to Archive</a></nav>
+<body>
 
-    <main class="max-w-[1400px] mx-auto px-8 grid lg:grid-cols-2 gap-20 py-10">
-        <div id="product-gallery" class="space-y-4">
-            <div class="aspect-square bg-gray-50 rounded-2xl overflow-hidden">
-                <img id="main-img" class="w-full h-full object-cover">
-            </div>
-            <div id="thumb-grid" class="grid grid-cols-5 gap-4"></div>
+    <nav class="p-8 border-b border-gray-50 bg-white/80 backdrop-blur-md fixed top-0 w-full z-50">
+        <div class="max-w-[1400px] mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+                Back to Shop
+            </a>
+            <div class="text-xl font-black italic tracking-tighter uppercase">STUDIO.</div>
         </div>
+    </nav>
 
-        <div class="sticky top-10 h-fit">
-            <span id="p-cat" class="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] block mb-4"></span>
-            <h1 id="p-title" class="text-6xl font-black italic uppercase tracking-tighter mb-6"></h1>
-            <p id="p-price" class="text-3xl font-light italic mb-10"></p>
+    <main class="max-w-[1400px] mx-auto px-8 pt-40 pb-20">
+        <div class="grid lg:grid-cols-2 gap-20 items-start">
             
-            <div id="p-desc" class="text-gray-500 leading-relaxed prose mb-12"></div>
-            
-            <div id="buy-area" class="pt-10 border-t"></div>
+            <div class="gallery-container">
+                <div class="aspect-[4/5] bg-gray-50 rounded-[2rem] overflow-hidden mb-6">
+                    <img id="main-view" src="" class="w-full h-full object-cover">
+                </div>
+                <div id="thumb-grid" class="grid grid-cols-5 gap-4"></div>
+            </div>
+
+            <div class="space-y-12">
+                <div>
+                    <span id="p-cat" class="text-[11px] font-black text-gray-300 uppercase tracking-[0.4em] mb-4 block italic"></span>
+                    <h1 id="p-title" class="text-7xl font-black italic uppercase tracking-tighter leading-[0.9] mb-6"></h1>
+                    <div class="flex items-center gap-6">
+                        <span id="p-price" class="text-4xl font-light italic text-gray-400"></span>
+                        <span class="bg-black text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Digital License</span>
+                    </div>
+                </div>
+
+                <div id="p-desc" class="prose prose-lg text-gray-500 font-medium leading-relaxed border-t pt-10">
+                    </div>
+
+                <div class="pt-10 space-y-4">
+                    <div id="gumroad-container">
+                        </div>
+                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest text-center">Secure Checkout via Gumroad</p>
+                </div>
+            </div>
         </div>
     </main>
 
+    <footer class="bg-black text-white py-20 px-8 mt-20">
+        <div class="max-w-[1400px] mx-auto text-center">
+            <div class="text-2xl font-black italic mb-8 uppercase">STUDIO.</div>
+            <p class="text-gray-600 text-xs font-bold uppercase tracking-[0.5em]">2026 Archive System</p>
+        </div>
+    </footer>
+
     <script src="firebase-config.js"></script>
     <script>
+        // URL'den ID al
         const urlParams = new URLSearchParams(window.location.search);
-        const pid = urlParams.get('id');
+        const productId = urlParams.get('id');
 
-        db.ref('products/' + pid).on('value', snap => {
-            const p = snap.val();
-            if(!p) return;
+        if(!productId) window.location.href = 'index.html';
 
-            document.getElementById('p-title').innerText = p.title;
-            document.getElementById('p-cat').innerText = p.category;
-            document.getElementById('p-price').innerText = `$${p.price}`;
-            document.getElementById('p-desc').innerHTML = p.description;
-            document.getElementById('main-img').src = p.images[0];
-            
-            // Thumbnails
-            document.getElementById('thumb-grid').innerHTML = p.images.map(img => `
-                <img src="${img}" onclick="document.getElementById('main-img').src='${img}'" class="aspect-square object-cover rounded-lg cursor-pointer hover:opacity-50 transition">
+        function loadProductDetail() {
+            db.ref('products/' + productId).on('value', snap => {
+                const p = snap.val();
+                if(!p) return;
+
+                // DOM Güncelleme
+                document.title = `${p.title} | Studio Archive`;
+                document.getElementById('p-title').innerText = p.title;
+                document.getElementById('p-cat').innerText = p.category;
+                document.getElementById('p-price').innerText = `$${p.price}`;
+                document.getElementById('p-desc').innerHTML = p.description;
+                
+                // Galeri Kurulumu
+                if(p.images && p.images.length > 0) {
+                    document.getElementById('main-view').src = p.images[0];
+                    renderThumbs(p.images);
+                }
+
+                // Gumroad Entegrasyonu
+                const gumroadBtn = `
+                    <a href="${p.gumroadUrl}" 
+                       data-gumroad-overlay-checkout="true" 
+                       class="block w-full bg-black text-white text-center py-8 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-sm hover:scale-[1.02] transition-transform duration-300">
+                       Get this Archive — $${p.price}
+                    </a>`;
+                document.getElementById('gumroad-container').innerHTML = gumroadBtn;
+                
+                // Gumroad Overlay Yenile
+                if (window.GumroadOverlay) window.GumroadOverlay.reload();
+            });
+        }
+
+        function renderThumbs(imgs) {
+            const grid = document.getElementById('thumb-grid');
+            grid.innerHTML = imgs.map((img, index) => `
+                <div class="thumb-btn ${index === 0 ? 'active' : ''}" onclick="changeMainImg(this, '${img}')">
+                    <img src="${img}" class="w-full h-full aspect-square object-cover">
+                </div>
             `).join('');
+        }
 
-            // Buy Button
-            document.getElementById('buy-area').innerHTML = `
-                <a href="${p.gumroadUrl}" data-gumroad-overlay-checkout="true" class="block w-full bg-black text-white text-center py-6 rounded-xl font-black uppercase tracking-widest hover:opacity-80 transition">Buy on Gumroad</a>
-            `;
-            if (window.GumroadOverlay) window.GumroadOverlay.reload();
-        });
-    </script>
-</body>
-</html>
+        function changeMainImg(el, src) {
+            document.getElementById('main-view').src = src;
+            document.querySelectorAll('.thumb-btn').
