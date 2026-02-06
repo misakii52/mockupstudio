@@ -1,4 +1,4 @@
-// FIREBASE CONFIGURATION - UĞUR TEST PROJECT
+// FIREBASE KONFİGÜRASYONU - UĞUR TEST PROJESİ
 const firebaseConfig = {
     apiKey: "AIzaSyBNZwe5xiM0GhO2WJURqvtkQPtkwszL4gY",
     authDomain: "ugur-test-54b90.firebaseapp.com",
@@ -9,7 +9,7 @@ const firebaseConfig = {
     measurementId: "G-LMK90XWD7Z"
 };
 
-// Firebase SDK imports
+// Firebase SDK'larını import et
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -19,14 +19,14 @@ import {
     onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-// Initialize Firebase
+// Firebase'i başlat
 const app = initializeApp(firebaseConfig);
 
-// Get Firestore and Auth services
+// Firestore ve Auth servislerini al
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Export for use in other files
+// Export et
 export { 
     db, 
     auth, 
