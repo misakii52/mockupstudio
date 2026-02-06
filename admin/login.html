@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | Fourthwall Clone</title>
+    <title>Admin Giriş - Mockup Master</title>
     <link rel="stylesheet" href="../css/admin.css">
     <style>
-        .login-page {
+        .login-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,7 +27,6 @@
             text-align: center;
             margin-bottom: 30px;
             font-weight: 300;
-            font-size: 24px;
         }
         
         .form-group {
@@ -38,7 +37,6 @@
             display: block;
             margin-bottom: 5px;
             font-size: 14px;
-            color: #333;
         }
         
         .form-control {
@@ -56,47 +54,49 @@
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 14px;
             cursor: pointer;
-            transition: background 0.3s;
-        }
-        
-        .btn-login:hover {
-            background: #333;
+            font-size: 14px;
         }
         
         .error-message {
             color: #ff4444;
             margin-top: 10px;
             text-align: center;
-            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="login-page">
+    <div class="login-container">
         <div class="login-box">
-            <h1>Admin Login</h1>
+            <h1>Admin Giriş</h1>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" class="form-control" required>
                 </div>
-                
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">Şifre</label>
                     <input type="password" id="password" class="form-control" required>
                 </div>
-                
-                <button type="submit" class="btn-login">Login</button>
+                <button type="submit" class="btn-login">Giriş Yap</button>
                 <div id="errorMessage" class="error-message"></div>
             </form>
         </div>
     </div>
 
+    <!-- Firebase -->
     <script type="module">
-        import { auth, signInWithEmailAndPassword } from '../js/firebase-config.js';
+        // Firebase konfigürasyonunu import et
+        import { auth, signInWithEmailAndPassword, onAuthStateChanged } from '../js/firebase-config.js';
         
+        // Zaten giriş yapmış mı kontrol et
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+        
+        // Giriş formu
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -108,17 +108,8 @@
                 await signInWithEmailAndPassword(auth, email, password);
                 window.location.href = 'dashboard.html';
             } catch (error) {
-                errorMessage.textContent = 'Invalid email or password';
-                console.error('Login error:', error);
-            }
-        });
-        
-        // Check if already logged in
-        import { onAuthStateChanged } from '../js/firebase-config.js';
-        
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.location.href = 'dashboard.html';
+                console.error('Giriş hatası:', error);
+                errorMessage.textContent = 'Email veya şifre hatalı';
             }
         });
     </script>
