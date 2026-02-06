@@ -1,4 +1,8 @@
-// FIREBASE KONFİGÜRASYONU - UĞUR TEST PROJESİ
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
 const firebaseConfig = {
     apiKey: "AIzaSyBNZwe5xiM0GhO2WJURqvtkQPtkwszL4gY",
     authDomain: "ugur-test-54b90.firebaseapp.com",
@@ -9,28 +13,7 @@ const firebaseConfig = {
     measurementId: "G-LMK90XWD7Z"
 };
 
-// Firebase SDK'larını import et
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { 
-    signInWithEmailAndPassword, 
-    signOut, 
-    onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-
-// Firebase'i başlat
 const app = initializeApp(firebaseConfig);
-
-// Firestore ve Auth servislerini al
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-// Export et
-export { 
-    db, 
-    auth, 
-    signInWithEmailAndPassword, 
-    signOut, 
-    onAuthStateChanged 
-};
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const storage = getStorage(app);
