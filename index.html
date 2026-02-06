@@ -1,1 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop All | Fourthwall Clone</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/product-gallery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <!-- Logo -->
+                <div class="logo">
+                    <a href="index.html" id="siteLogo">BRAND</a>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="main-nav" id="mainNav">
+                    <ul>
+                        <li><a href="index.html" class="active">Shop All</a></li>
+                        <!-- Categories will be loaded dynamically -->
+                    </ul>
+                </nav>
+                
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <form id="globalSearchForm">
+                        <input type="text" id="globalSearch" placeholder="Search products...">
+                        <button type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+                
+                <!-- Cart Icon -->
+                <div class="cart-icon">
+                    <a href="#"><i class="fas fa-shopping-bag"></i><span id="cartCount">0</span></a>
+                </div>
+            </div>
+        </div>
+    </header>
 
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <h1>Premium Digital Products</h1>
+                <p>Minimal design, maximum quality</p>
+            </section>
+            
+            <!-- Products Grid -->
+            <section class="products-section">
+                <div class="products-filter">
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                    </select>
+                    <select id="sortFilter">
+                        <option value="newest">Newest First</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+                
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be loaded dynamically -->
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading products...</p>
+                    </div>
+                </div>
+                
+                <!-- Load More Button -->
+                <div class="load-more-container">
+                    <button id="loadMoreBtn" class="btn-load-more">Load More</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" id="siteFooter">
+        <!-- Footer content will be loaded dynamically -->
+        <div class="container">
+            <p>Loading footer...</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>
