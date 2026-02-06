@@ -1,1 +1,397 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer Settings | Mockup Master Admin</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .footer-settings-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .social-link-item {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        
+        .social-link-icon {
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        .custom-link-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 60px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .add-link-btn {
+            background: #f5f5f5;
+            border: 1px dashed #ddd;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            color: #666;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .add-link-btn:hover {
+            background: #eee;
+        }
+        
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .remove-btn:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="logo">
+                <h2>Mockup Master Admin</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="products.html"><i class="fas fa-box"></i> Products</a></li>
+                    <li><a href="categories.html"><i class="fas fa-folder"></i> Categories</a></li>
+                    <li><a href="footer.html" class="active"><i class="fas fa-shoe-prints"></i> Footer Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
 
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>Footer Settings</h1>
+                <button class="btn-logout" id="logoutBtn">Logout</button>
+            </header>
+
+            <!-- Footer Settings Form -->
+            <section class="footer-settings-section">
+                <form id="footerSettingsForm">
+                    <!-- Social Media Links -->
+                    <div class="form-group form-full-width">
+                        <h3 style="margin-bottom: 20px;">Social Media Links</h3>
+                        
+                        <div class="social-link-item">
+                            <div class="social-link-icon">
+                                <i class="fab fa-instagram"></i>
+                            </div>
+                            <div>
+                                <label for="instagramLink">Instagram URL</label>
+                                <input type="url" id="instagramLink" class="form-control" placeholder="https://instagram.com/yourprofile">
+                            </div>
+                        </div>
+                        
+                        <div class="social-link-item">
+                            <div class="social-link-icon">
+                                <i class="fab fa-twitter"></i>
+                            </div>
+                            <div>
+                                <label for="twitterLink">Twitter URL</label>
+                                <input type="url" id="twitterLink" class="form-control" placeholder="https://twitter.com/yourprofile">
+                            </div>
+                        </div>
+                        
+                        <div class="social-link-item">
+                            <div class="social-link-icon">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <div>
+                                <label for="youtubeLink">YouTube URL</label>
+                                <input type="url" id="youtubeLink" class="form-control" placeholder="https://youtube.com/yourchannel">
+                            </div>
+                        </div>
+                        
+                        <div class="social-link-item">
+                            <div class="social-link-icon">
+                                <i class="fab fa-facebook"></i>
+                            </div>
+                            <div>
+                                <label for="facebookLink">Facebook URL</label>
+                                <input type="url" id="facebookLink" class="form-control" placeholder="https://facebook.com/yourpage">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Links -->
+                    <div class="form-group form-full-width">
+                        <h3 style="margin-bottom: 20px;">Custom Footer Links</h3>
+                        <div id="customLinksContainer">
+                            <!-- Custom links will be added here -->
+                        </div>
+                        <button type="button" class="add-link-btn" id="addCustomLinkBtn">
+                            <i class="fas fa-plus"></i> Add Custom Link
+                        </button>
+                    </div>
+
+                    <!-- Copyright Text -->
+                    <div class="form-group form-full-width">
+                        <h3 style="margin-bottom: 20px;">Copyright Text</h3>
+                        <input type="text" id="copyrightText" class="form-control" placeholder="© 2024 Mockup Master. All rights reserved.">
+                    </div>
+
+                    <!-- Site Info -->
+                    <div class="form-group form-full-width">
+                        <h3 style="margin-bottom: 20px;">Site Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="siteName">Site Name</label>
+                                <input type="text" id="siteName" class="form-control" placeholder="Mockup Master" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="siteLogo">Logo URL</label>
+                                <input type="url" id="siteLogo" class="form-control" placeholder="https://example.com/logo.png">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 40px;">
+                        <button type="submit" class="btn-primary" id="btnSave">Save Settings</button>
+                        <button type="button" class="btn-secondary" id="btnReset">Reset to Default</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Success</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <p id="successMessage">Settings saved successfully!</p>
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn-primary" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from '../js/firebase-config.js';
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+        
+        let customLinkCount = 0;
+        
+        // Check authentication
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                loadFooterSettings();
+                setupEventListeners();
+            }
+        });
+        
+        // Load footer settings
+        async function loadFooterSettings() {
+            try {
+                const settingsRef = doc(db, 'settings', 'siteSettings');
+                const settingsDoc = await getDoc(settingsRef);
+                
+                if (settingsDoc.exists()) {
+                    const settings = settingsDoc.data();
+                    
+                    // Social links
+                    if (settings.footer?.socialLinks) {
+                        document.getElementById('instagramLink').value = settings.footer.socialLinks.instagram || '';
+                        document.getElementById('twitterLink').value = settings.footer.socialLinks.twitter || '';
+                        document.getElementById('youtubeLink').value = settings.footer.socialLinks.youtube || '';
+                        document.getElementById('facebookLink').value = settings.footer.socialLinks.facebook || '';
+                    }
+                    
+                    // Custom links
+                    if (settings.footer?.customLinks) {
+                        const container = document.getElementById('customLinksContainer');
+                        settings.footer.customLinks.forEach((link, index) => {
+                            addCustomLinkField(link.text, link.url, index);
+                        });
+                    }
+                    
+                    // Copyright text
+                    if (settings.footer?.copyright) {
+                        document.getElementById('copyrightText').value = settings.footer.copyright;
+                    }
+                    
+                    // Site info
+                    if (settings.siteInfo) {
+                        document.getElementById('siteName').value = settings.siteInfo.siteName || '';
+                        document.getElementById('siteLogo').value = settings.siteInfo.logo || '';
+                    }
+                } else {
+                    // Set defaults
+                    document.getElementById('copyrightText').value = `© ${new Date().getFullYear()} Mockup Master. All rights reserved.`;
+                    document.getElementById('siteName').value = 'Mockup Master';
+                    addCustomLinkField('About', '/about.html', 0);
+                    addCustomLinkField('Contact', '/contact.html', 1);
+                    addCustomLinkField('Privacy Policy', '/privacy.html', 2);
+                }
+                
+            } catch (error) {
+                console.error('Error loading footer settings:', error);
+                adminUtils.showNotification('Error loading settings: ' + error.message, 'error');
+            }
+        }
+        
+        // Add custom link field
+        function addCustomLinkField(text = '', url = '', index = null) {
+            const container = document.getElementById('customLinksContainer');
+            const linkIndex = index !== null ? index : customLinkCount;
+            
+            const linkDiv = document.createElement('div');
+            linkDiv.className = 'custom-link-item';
+            linkDiv.innerHTML = `
+                <div>
+                    <input type="text" class="form-control custom-link-text" 
+                           placeholder="Link Text" value="${text}" data-index="${linkIndex}">
+                </div>
+                <div>
+                    <input type="url" class="form-control custom-link-url" 
+                           placeholder="https://example.com" value="${url}" data-index="${linkIndex}">
+                </div>
+                <div>
+                    <button type="button" class="remove-btn" onclick="removeCustomLink(this)" ${customLinkCount < 3 ? 'disabled' : ''}>
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(linkDiv);
+            customLinkCount++;
+        }
+        
+        // Remove custom link
+        window.removeCustomLink = function(button) {
+            const linkItem = button.closest('.custom-link-item');
+            linkItem.remove();
+            customLinkCount--;
+            
+            // Update indexes
+            const containers = document.querySelectorAll('.custom-link-item');
+            containers.forEach((container, index) => {
+                const inputs = container.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.setAttribute('data-index', index);
+                });
+            });
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Add custom link button
+            document.getElementById('addCustomLinkBtn').addEventListener('click', () => {
+                addCustomLinkField();
+            });
+            
+            // Form submission
+            document.getElementById('footerSettingsForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveFooterSettings();
+            });
+            
+            // Reset button
+            document.getElementById('btnReset').addEventListener('click', () => {
+                if (confirm('Reset all footer settings to default? This cannot be undone.')) {
+                    resetToDefaults();
+                }
+            });
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                window.logout();
+            });
+        }
+        
+        // Save footer settings
+        async function saveFooterSettings() {
+            try {
+                // Collect social links
+                const socialLinks = {
+                    instagram: document.getElementById('instagramLink').value.trim(),
+                    twitter: document.getElementById('twitterLink').value.trim(),
+                    youtube: document.getElementById('youtubeLink').value.trim(),
+                    facebook: document.getElementById('facebookLink').value.trim()
+                };
+                
+                // Collect custom links
+                const customLinks = [];
+                const textInputs = document.querySelectorAll('.custom-link-text');
+                const urlInputs = document.querySelectorAll('.custom-link-url');
+                
+                for (let i = 0; i < textInputs.length; i++) {
+                    const text = textInputs[i].value.trim();
+                    const url = urlInputs[i].value.trim();
+                    
+                    if (text && url) {
+                        customLinks.push({ text, url });
+                    }
+                }
+                
+                // Collect other settings
+                const copyright = document.getElementById('copyrightText').value.trim();
+                const siteName = document.getElementById('siteName').value.trim();
+                const siteLogo = document.getElementById('siteLogo').value.trim();
+                
+                // Validate required fields
+                if (!siteName) {
+                    adminUtils.showNotification('Site name is required', 'error');
+                    return;
+                }
+                
+                // Prepare settings data
+                const settingsData = {
+                    footer: {
+                        socialLinks,
+                        customLinks,
+                        copyright: copyright || `© ${new Date().getFullYear()} ${siteName}. All rights reserved.`
+                    },
+                    siteInfo: {
+                        siteName,
+                        logo: siteLogo
+                    },
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Save to Firestore
+                const settingsRef = doc(db, 'settings', 'siteSettings');
+                await setDoc(settingsRef, settings
