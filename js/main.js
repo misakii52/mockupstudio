@@ -1,20 +1,66 @@
 import { db } from './firebase-config.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log("Sayfa yüklendi, Firebase test ediliyor...");
-    
+    await loadHeaderCategories();
+    await loadProducts();
+    await loadFooter();
+});
+
+// Header'a kategorileri yükle
+async function loadHeaderCategories() {
     try {
-        // Ürünleri getir
-        const querySnapshot = await getDocs(collection(db, "products"));
+        const categoriesRef = collection(db, 'categories');
+        const q = query(categoriesRef, 
+            where('isActive', '==', true), 
+            where('inHeader', '==', true), 
+            orderBy('order')
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const navMenu = document.querySelector('.main-nav ul');
+        
+        if (navMenu) {
+            // "Shop All" hariç diğerlerini temizle
+            const shopAllItem = navMenu.querySelector('li:first-child');
+            if (shopAllItem) {
+                navMenu.innerHTML = '';
+                navMenu.appendChild(shopAllItem);
+            }
+            
+            // Kategorileri ekle
+            querySnapshot.forEach((doc) => {
+                const category = doc.data();
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="category.html?slug=${category.slug}">${category.name}</a>`;
+                navMenu.appendChild(li);
+            });
+        }
+        
+    } catch (error) {
+        console.error('Kategoriler yüklenirken hata:', error);
+    }
+}
+
+// Ürünleri yükle
+async function loadProducts() {
+    try {
+        const productsQuery = query(
+            collection(db, 'products'),
+            where('status', '==', 'active'),
+            orderBy('createdAt', 'desc')
+        );
+        
+        const querySnapshot = await getDocs(productsQuery);
         const productsGrid = document.getElementById('productsGrid');
         
         if (querySnapshot.empty) {
-            productsGrid.innerHTML = '<p>Henüz ürün yok. Firebase\'de products koleksiyonunu oluşturun.</p>';
+            productsGrid.innerHTML = '<p>Henüz ürün yok.</p>';
             return;
         }
         
         productsGrid.innerHTML = '';
+        
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const productCard = `
@@ -24,25 +70,63 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <div class="product-info">
                         <h3>${product.title}</h3>
-                        <div class="product-price">$${product.price || '0.00'}</div>
+                        <div class="product-price">$${product.price?.toFixed(2) || '0.00'}</div>
                     </div>
                 </a>
             `;
             productsGrid.innerHTML += productCard;
         });
         
-        console.log(`${querySnapshot.size} ürün yüklendi.`);
+    } catch (error) {
+        console.error('Ürünler yüklenirken hata:', error);
+    }
+}
+
+// Footer'ı yükle
+async function loadFooter() {
+    try {
+        // Kategorileri footer'a yükle
+        const categoriesRef = collection(db, 'categories');
+        const q = query(categoriesRef, 
+            where('isActive', '==', true), 
+            where('inFooter', '==', true), 
+            orderBy('order')
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const footer = document.getElementById('siteFooter');
+        
+        let categoriesHTML = '';
+        querySnapshot.forEach((doc) => {
+            const category = doc.data();
+            categoriesHTML += `<li><a href="category.html?slug=${category.slug}">${category.name}</a></li>`;
+        });
+        
+        footer.innerHTML = `
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h4>Kategoriler</h4>
+                        <ul class="footer-links">
+                            ${categoriesHTML}
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Bağlantılar</h4>
+                        <ul class="footer-links">
+                            <li><a href="index.html">Ana Sayfa</a></li>
+                            <li><a href="#">Hakkımızda</a></li>
+                            <li><a href="#">İletişim</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>© ${new Date().getFullYear()} Mockup Master. Tüm hakları saklıdır.</p>
+                </div>
+            </div>
+        `;
         
     } catch (error) {
-        console.error("Firebase hatası:", error);
-        document.getElementById('productsGrid').innerHTML = `
-            <p style="color: red; text-align: center;">
-                Firebase bağlantı hatası:<br>
-                ${error.message}<br><br>
-                1. Firebase Console'da Firestore oluşturdunuz mu?<br>
-                2. "products" koleksiyonu var mı?<br>
-                3. Security Rules "test mode"da mı?
-            </p>
-        `;
+        console.error('Footer yüklenirken hata:', error);
     }
-});
+}
