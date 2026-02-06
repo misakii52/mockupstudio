@@ -1,11 +1,147 @@
 import { db } from './firebase-config.js';
 import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadHeaderCategories();
-    await loadProducts();
-    await loadFooter();
-});
+// Header CSS (Kategoriler yatay gösterim için)
+const headerStyles = `
+<style>
+    .header {
+        position: sticky;
+        top: 0;
+        background: white;
+        border-bottom: 1px solid #e0e0e0;
+        z-index: 1000;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .header-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 30px;
+        padding: 15px 0;
+    }
+    
+    .logo a {
+        font-size: 24px;
+        font-weight: 700;
+        text-decoration: none;
+        color: #000;
+        letter-spacing: -0.5px;
+    }
+    
+    .main-nav ul {
+        display: flex;
+        list-style: none;
+        gap: 30px;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .main-nav a {
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: color 0.3s;
+        white-space: nowrap;
+    }
+    
+    .main-nav a:hover,
+    .main-nav a.active {
+        color: #000;
+    }
+    
+    .search-container {
+        flex: 1;
+        max-width: 400px;
+    }
+    
+    #globalSearchForm {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    #globalSearch {
+        flex: 1;
+        padding: 10px 15px;
+        border: none;
+        font-size: 14px;
+    }
+    
+    #globalSearchForm button {
+        background: none;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        color: #666;
+    }
+    
+    .cart-icon a {
+        display: flex;
+        align-items: center;
+        color: #000;
+        text-decoration: none;
+        position: relative;
+    }
+    
+    #cartCount {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #000;
+        color: white;
+        font-size: 12px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header-inner {
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .main-nav ul {
+            order: 3;
+            width: 100%;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .search-container {
+            order: 2;
+            max-width: 100%;
+        }
+        
+        .logo {
+            order: 1;
+        }
+        
+        .cart-icon {
+            order: 1;
+        }
+    }
+</style>
+`;
+
+// Sayfa yüklendiğinde header CSS'ini ekle
+document.head.insertAdjacentHTML('beforeend', headerStyles);
 
 // Header'a kategorileri yükle
 async function loadHeaderCategories() {
@@ -22,25 +158,44 @@ async function loadHeaderCategories() {
         
         if (navMenu) {
             // "Shop All" hariç diğerlerini temizle
-            const shopAllItem = navMenu.querySelector('li:first-child');
-            if (shopAllItem) {
-                navMenu.innerHTML = '';
-                navMenu.appendChild(shopAllItem);
+            const existingItems = navMenu.querySelectorAll('li');
+            if (existingItems.length > 1) {
+                existingItems.forEach((item, index) => {
+                    if (index > 0) item.remove();
+                });
             }
             
-            // Kategorileri ekle
+            // Kategorileri ekle (yatay olarak)
             querySnapshot.forEach((doc) => {
                 const category = doc.data();
                 const li = document.createElement('li');
-                li.innerHTML = `<a href="category.html?slug=${category.slug}">${category.name}</a>`;
+                li.innerHTML = `
+                    <a href="category.html?id=${doc.id}&name=${encodeURIComponent(category.name)}">
+                        ${category.name}
+                    </a>
+                `;
                 navMenu.appendChild(li);
             });
+            
+            // Eğer kategori yoksa mesaj göster
+            if (querySnapshot.empty) {
+                const li = document.createElement('li');
+                li.innerHTML = '<a href="categories.html" style="color: #666; font-style: italic;">Kategori ekleyin</a>';
+                navMenu.appendChild(li);
+            }
         }
         
     } catch (error) {
-        console.error('Kategoriler yüklenirken hata:', error);
+        console.error('Header kategorileri yüklenirken hata:', error);
     }
 }
+
+// Ana sayfa yükleme
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadHeaderCategories();
+    await loadProducts();
+    await loadFooter();
+});
 
 // Ürünleri yükle
 async function loadProducts() {
@@ -54,8 +209,15 @@ async function loadProducts() {
         const querySnapshot = await getDocs(productsQuery);
         const productsGrid = document.getElementById('productsGrid');
         
+        if (!productsGrid) return;
+        
         if (querySnapshot.empty) {
-            productsGrid.innerHTML = '<p>Henüz ürün yok.</p>';
+            productsGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+                    <p style="color: #666; font-size: 16px;">Henüz ürün yok.</p>
+                    <a href="admin/products.html" style="color: #000; text-decoration: underline;">Admin panelinden ürün ekleyin</a>
+                </div>
+            `;
             return;
         }
         
@@ -66,7 +228,9 @@ async function loadProducts() {
             const productCard = `
                 <a href="product.html?id=${doc.id}" class="product-card">
                     <div class="product-image">
-                        <img src="${product.images?.[0] || 'https://via.placeholder.com/300'}" alt="${product.title}">
+                        <img src="${product.images?.[0] || 'https://via.placeholder.com/300'}" 
+                             alt="${product.title}"
+                             loading="lazy">
                     </div>
                     <div class="product-info">
                         <h3>${product.title}</h3>
@@ -96,10 +260,18 @@ async function loadFooter() {
         const querySnapshot = await getDocs(q);
         const footer = document.getElementById('siteFooter');
         
+        if (!footer) return;
+        
         let categoriesHTML = '';
         querySnapshot.forEach((doc) => {
             const category = doc.data();
-            categoriesHTML += `<li><a href="category.html?slug=${category.slug}">${category.name}</a></li>`;
+            categoriesHTML += `
+                <li>
+                    <a href="category.html?id=${doc.id}&name=${encodeURIComponent(category.name)}">
+                        ${category.name}
+                    </a>
+                </li>
+            `;
         });
         
         footer.innerHTML = `
@@ -108,20 +280,19 @@ async function loadFooter() {
                     <div class="footer-section">
                         <h4>Kategoriler</h4>
                         <ul class="footer-links">
-                            ${categoriesHTML}
+                            ${categoriesHTML || '<li>Henüz kategori yok</li>'}
                         </ul>
                     </div>
                     <div class="footer-section">
                         <h4>Bağlantılar</h4>
                         <ul class="footer-links">
                             <li><a href="index.html">Ana Sayfa</a></li>
-                            <li><a href="#">Hakkımızda</a></li>
-                            <li><a href="#">İletişim</a></li>
+                            <li><a href="admin/login.html">Admin</a></li>
                         </ul>
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>© ${new Date().getFullYear()} Mockup Master. Tüm hakları saklıdır.</p>
+                    <p>© ${new Date().getFullYear()} Mockup Master</p>
                 </div>
             </div>
         `;
