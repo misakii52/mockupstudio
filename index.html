@@ -1,63 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Mockup Studio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-  <style>
-    body { font-family: Arial; padding: 40px; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; }
-    .card { border:1px solid #ddd; padding:10px; }
-    img { width:100%; height:200px; object-fit:cover; background:#f0f0f0; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECURE ADMIN | Studio Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
+        .admin-card { background: white; border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .login-overlay { position: fixed; inset: 0; background: #000; z-index: 999; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #edf2f7; border-radius: 12px; transition: 0.3s; font-weight: 500; }
+        input:focus { border-color: #000; outline: none; }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+        .btn-primary { background: #000; color: #fff; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+    </style>
 </head>
 <body>
 
-<h1>Shop All</h1>
-
-<div id="products" class="grid"></div>
-
-<script>
-  // 🔑 FIREBASE CONFIG (AYNI)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
-    authDomain: "mockup-master-db.firebaseapp.com",
-    databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
-    projectId: "mockup-master-db",
-    storageBucket: "mockup-master-db.firebasestorage.app",
-    messagingSenderId: "68063883147",
-    appId: "1:68063883147:web:07debadc7efe4aeccac98e"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  db.ref("products").on("value", snap => {
-    const data = snap.val();
-    const box = document.getElementById("products");
-    box.innerHTML = "";
-
-    if (!data) {
-      box.innerHTML = "<p>No products yet.</p>";
-      return;
-    }
-
-    Object.values(data).forEach(p => {
-      box.innerHTML += `
-        <div class="card">
-          <img src="${p.img}" onerror="this.style.display='none'">
-          <h3>${p.title}</h3>
-          <p>${p.price}</p>
+    <div id="login-screen" class="login-overlay">
+        <div class="bg-white p-10 rounded-[2.5rem] w-full max-w-md text-center">
+            <h2 class="text-3xl font-black mb-6 uppercase tracking-tighter italic">Admin Access</h2>
+            <input type="password" id="admin-pass" placeholder="Master Password" class="text-center text-2xl">
+            <button onclick="checkAuth()" class="btn-primary w-full">Giriş Yap</button>
+            <p id="login-error" class="text-red-500 mt-4 text-xs font-bold hidden">Geçersiz Şifre!</p>
         </div>
-      `;
-    });
-  });
-</script>
+    </div>
 
-</body>
-</html>
+    <div id="admin-panel" class="hidden p-6 lg:p-12">
+        <div class="max-w-7xl mx-auto">
+            <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+                <div class="branding text-2xl font-black italic uppercase">Control <span class="text-gray-300">Center</span></div>
+                <nav class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm">
+                    <button onclick="openTab('products')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase hover:bg-gray-100 transition">Ürünler</button>
+                    <button onclick="openTab('slider')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase hover:bg-gray-100 transition">Slider</button>
+                    <button onclick="openTab('settings')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase hover:bg-gray-100 transition">Site Ayarları</button>
+                    <button onclick="location.reload()" class="px-6 py-3 rounded-xl font-bold text-xs uppercase bg-red-50 text-red-600">Çıkış</button>
+                </nav>
+            </header>
+
+            <div id="products" class="tab-content active grid lg:grid-cols-3 gap-8">
+                <div class="admin-card p-8 h-fit sticky top-10">
+                    <h3 class="font-black uppercase mb-6 italic text-lg">Ürün Ekle / Düzenle</h3>
+                    <input id="pId" type="hidden">
+                    <input id="pTitle" placeholder="Ürün Başlığı">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="pPrice" placeholder="Fiyat (örn: $29)">
+                        <select id="pCatList"></select>
+                    </div>
+                    <input id="pSlug" placeholder="Gumroad Slug">
+                    <input id="pImg" placeholder="Görsel URL">
+                    <textarea id="pDesc" placeholder="Ürün Açıklaması (Meta)" rows="4"></textarea>
+                    <button onclick="saveProduct()" class="btn-primary w-full">Koleksiyonu Güncelle</button>
+                </div>
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="admin-card p-8">
+                        <h3 class="font-black uppercase mb-4 text-gray-400 text-xs tracking-widest">Kategori Yönetimi</h3>
+                        <div class="flex gap-2 mb-6"><input id="newCat" placeholder="Yeni Kategori Adı" class="!mb-0"><button onclick="addCat()" class="btn-primary">+</button></div>
+                        <div id="cat-list" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="admin-card p-8">
+                        <h3 class="font-black uppercase mb-6 text-gray-400 text-xs tracking-widest">Mevcut Ürünler</h3>
+                        <div id="inventory-list" class="grid gap-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="slider" class="tab-content admin-card p-8">
+                <h3 class="font-black uppercase mb-8 italic text-lg">Hero Slider (Max 10 Görsel)</h3>
+                <div class="grid lg:grid-cols-4 gap-6">
+                    <div class="space-y-2">
+                        <input id="slideImg" placeholder="Görsel URL">
+                        <input id="slideLink" placeholder="Gumroad Slug">
+                        <textarea id="slideMeta" placeholder="Slayt Açıklaması" rows="3"></textarea>
+                        <button onclick="addSlide()" class="btn-primary w-full">Slayt Ekle</button>
+                    </div>
+                    <div id="slider-list" class="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <div id="settings" class="tab-content admin-card p-10">
+                <h3 class="font-black uppercase mb-8 italic text-lg">Genel Site Yapılandırması</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-gray-400">Logo Ana Metin</label><input id="setLogo">
+                        <label class="text-[10px] font-black uppercase text-gray-400">Logo Vurgu Metni</label><input id="setLogoAccent">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-gray-400">Footer Açıklama</label><textarea id="setFooterDesc" rows="4"></textarea>
+                        <label class="text-[10px] font-black uppercase text-gray-400">Instagram Link</label><input id="setInsta">
+                    </div>
+                </div>
+                <button onclick="saveSettings()" class="btn-primary mt-6">Tüm Ayarları Uygula</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDs6JHPSV8UM2uKSSVUA1SNxWGyxAihaII",
+            authDomain: "mockup-master-db.firebaseapp.com",
+            databaseURL: "https://mockup-master-db-default-rtdb.firebaseio.com",
+            projectId: "mockup-master-db",
+            storageBucket: "mockup-master-db.firebasestorage.app",
+            messagingSenderId: "68063883147",
+            appId: "1:68063883147:web:07debadc7efe4aeccac98e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // GÜVENLİK
+        function checkAuth() {
+            const pass = document.getElementById('admin-pass').value;
+            if(pass === "123456") { // BURAYI DEĞİŞTİR
+                document.getElementById('login-screen').style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    initAdmin();
+                }, 500);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function openTab(id) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function initAdmin() {
+            // Veri Dinleyicileri
+            db.ref('products').on('value', snap => {
+                const prods = snap.val() ? Object.values(snap.val()) : [];
+                document.getElementById('inventory-list').innerHTML = prods.reverse().map(p => `
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <img src="${p.img}" class="w-10 h-10 object-cover rounded-lg">
+                            <span class="font-bold text-xs uppercase">${p.title}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editProduct('${p.id}')" class="text-[10px] font-black uppercase text-blue-600">Düzenle</button>
+                            <button onclick="db.ref('products/${p.id}').remove()" class="text-[10px] font-black uppercase text-red-500">Sil</button>
+                        </div>
+                    </div>`).join('');
+            });
+
+            db.ref('categories').on('value', snap => {
+                const cats = snap.val() ? Object.entries(snap.val()) : [];
+                document.getElementById('cat-list').innerHTML = cats.map(([id, n]) => `<span class="bg-black text-white px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-2">${n} <i onclick="db.ref('categories/${id}').remove()" class="cursor-pointer font-normal opacity-50 hover:opacity-100">x</i></span>`).join('');
+                document.getElementById('pCatList
