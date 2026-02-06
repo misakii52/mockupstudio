@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS kodları aynı kalabilir */
         .products-header {
             display: flex;
             justify-content: space-between;
@@ -61,6 +60,21 @@
             background: #fff3cd;
             color: #856404;
         }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -110,6 +124,12 @@
                         </thead>
                         <tbody id="productsTableBody">
                             <!-- Products will be loaded here -->
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px;">
+                                    <div class="spinner"></div>
+                                    <p>Loading products...</p>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -122,7 +142,7 @@
                     <button class="btn-secondary" id="btnCancel">Cancel</button>
                 </div>
 
-                <form id="productForm">
+                <form id="productForm" style="max-width: 600px;">
                     <input type="hidden" id="productId">
                     
                     <div class="form-group">
@@ -131,9 +151,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="productCategory">Category</label>
-                        <select id="productCategory" class="form-control">
-                            <option value="">Select Category</option>
+                        <label for="productCategory">Category *</label>
+                        <select id="productCategory" class="form-control" required>
+                            <option value="">Loading categories...</option>
                         </select>
                     </div>
 
@@ -144,12 +164,12 @@
 
                     <div class="form-group">
                         <label for="productDescription">Description</label>
-                        <textarea id="productDescription" class="form-control" rows="3"></textarea>
+                        <textarea id="productDescription" class="form-control" rows="3" placeholder="Product description..."></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="productStatus">Status</label>
-                        <select id="productStatus" class="form-control">
+                        <label for="productStatus">Status *</label>
+                        <select id="productStatus" class="form-control" required>
                             <option value="active">Active</option>
                             <option value="draft">Draft</option>
                         </select>
@@ -165,17 +185,14 @@
     </div>
 
     <script type="module">
-        // Önce importları kontrol et
-        console.log("Script başladı...");
+        // Önce db'yi kontrol et
+        console.log("Script başlatılıyor...");
         
-        try {
-            import { auth, db } from '../js/firebase-config.js';
-            console.log("Firebase import başarılı");
-        } catch (error) {
-            console.error("Firebase import hatası:", error);
-            alert("Firebase config dosyası yüklenemedi: " + error.message);
-        }
+        // Import işlemleri
+        import { auth, db } from '../js/firebase-config.js';
+        console.log("Firebase config yüklendi, db:", db ? "VAR" : "YOK");
         
+        // Firestore fonksiyonlarını import et
         import { 
             collection, 
             getDocs, 
@@ -189,53 +206,64 @@
             getDoc
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         
+        // Auth fonksiyonlarını import et
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
         
+        // Global değişkenler
         let currentProductId = null;
         let categories = [];
         
-        // Check authentication
+        // Auth kontrolü
         onAuthStateChanged(auth, (user) => {
+            console.log("Auth state değişti, user:", user ? user.email : "YOK");
             if (!user) {
-                console.log("Kullanıcı girişi yok, login sayfasına yönlendiriliyor...");
                 window.location.href = 'login.html';
             } else {
-                console.log("Kullanıcı giriş yaptı:", user.email);
-                loadProducts();
-                loadCategories();
-                setupEventListeners();
+                console.log("Kullanıcı giriş yaptı, fonksiyonlar başlatılıyor...");
+                initializeApp();
             }
         });
         
-        // Logout
+        // Uygulamayı başlat
+        async function initializeApp() {
+            try {
+                console.log("initializeApp başlatıldı");
+                
+                // Önce kategorileri yükle (ürünlerden önce)
+                await loadCategories();
+                console.log("Kategoriler yüklendi, sayısı:", categories.length);
+                
+                // Sonra ürünleri yükle
+                await loadProducts();
+                console.log("Ürünler yüklendi");
+                
+                // Event listener'ları kur
+                setupEventListeners();
+                console.log("Event listener'lar kuruldu");
+                
+            } catch (error) {
+                console.error("initializeApp hatası:", error);
+            }
+        }
+        
+        // Çıkış yap
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             try {
                 await signOut(auth);
                 window.location.href = 'login.html';
             } catch (error) {
-                console.error('Logout error:', error);
-                alert('Logout error: ' + error.message);
+                console.error('Çıkış hatası:', error);
+                alert('Çıkış yapılırken hata: ' + error.message);
             }
         });
         
-        // Load all products
+        // Tüm ürünleri yükle
         async function loadProducts() {
             try {
                 console.log("Ürünler yükleniyor...");
-                const tableBody = document.getElementById('productsTableBody');
-                
-                // Önce loading göster
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px;">
-                            <div class="spinner"></div>
-                            <p>Loading products...</p>
-                        </td>
-                    </tr>
-                `;
-                
                 const productsQuery = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(productsQuery);
+                const tableBody = document.getElementById('productsTableBody');
                 
                 if (querySnapshot.empty) {
                     tableBody.innerHTML = `
@@ -253,7 +281,15 @@
                 querySnapshot.forEach((docSnapshot) => {
                     const product = docSnapshot.data();
                     const productId = docSnapshot.id;
-                    const categoryName = categories.find(c => c.id === product.category)?.name || 'Uncategorized';
+                    
+                    // Kategori ismini bul
+                    let categoryName = 'Uncategorized';
+                    if (product.category && categories.length > 0) {
+                        const foundCategory = categories.find(c => c.id === product.category);
+                        if (foundCategory) {
+                            categoryName = foundCategory.name;
+                        }
+                    }
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -273,10 +309,10 @@
                         </td>
                         <td>
                             <div class="product-actions">
-                                <button class="btn btn-edit" onclick="editProduct('${productId}')">
+                                <button class="btn btn-edit" onclick="window.editProduct('${productId}')">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button class="btn btn-danger" onclick="showDeleteModal('${productId}')">
+                                <button class="btn btn-danger" onclick="window.showDeleteModal('${productId}')">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </div>
@@ -285,109 +321,147 @@
                     tableBody.appendChild(row);
                 });
                 
+                console.log(`${querySnapshot.size} ürün yüklendi`);
+                
             } catch (error) {
-                console.error('Error loading products:', error);
+                console.error('Ürünler yüklenirken hata:', error);
                 const tableBody = document.getElementById('productsTableBody');
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 40px; color: #dc3545;">
-                            Error loading products. Please check console.
+                            Error loading products: ${error.message}
                         </td>
                     </tr>
                 `;
             }
         }
         
-        // Load categories for dropdown
+        // Kategorileri yükle (dropdown için)
         async function loadCategories() {
             try {
                 console.log("Kategoriler yükleniyor...");
-                const categoriesSnapshot = await getDocs(collection(db, 'categories'));
-                const categorySelect = document.getElementById('productCategory');
                 
+                // Kategoriler koleksiyonunu al
+                const categoriesRef = collection(db, 'categories');
+                console.log("Kategoriler referansı:", categoriesRef);
+                
+                // Tüm kategorileri getir (filtre olmadan)
+                const querySnapshot = await getDocs(categoriesRef);
+                console.log("Kategori snapshot:", querySnapshot);
+                console.log("Kategori sayısı:", querySnapshot.size);
+                
+                const categorySelect = document.getElementById('productCategory');
                 categories = [];
+                
+                // Dropdown'ı temizle
                 categorySelect.innerHTML = '<option value="">Select Category</option>';
                 
-                categoriesSnapshot.forEach((docSnapshot) => {
+                if (querySnapshot.empty) {
+                    console.log("Kategori yok!");
+                    categorySelect.innerHTML = '<option value="">No categories found</option>';
+                    return;
+                }
+                
+                // Her kategori için option oluştur
+                querySnapshot.forEach((doc) => {
+                    const categoryData = doc.data();
                     const category = {
-                        id: docSnapshot.id,
-                        ...docSnapshot.data()
+                        id: doc.id,
+                        ...categoryData
                     };
                     categories.push(category);
                     
                     const option = document.createElement('option');
-                    option.value = docSnapshot.id;
-                    option.textContent = category.name;
+                    option.value = doc.id;
+                    option.textContent = categoryData.name || 'Unnamed Category';
                     categorySelect.appendChild(option);
                 });
                 
-                console.log(`${categories.length} kategori yüklendi`);
+                console.log(`${categories.length} kategori dropdown'a eklendi`);
                 
             } catch (error) {
-                console.error('Error loading categories:', error);
-                alert('Error loading categories: ' + error.message);
+                console.error('Kategoriler yüklenirken hata:', error);
+                const categorySelect = document.getElementById('productCategory');
+                categorySelect.innerHTML = `
+                    <option value="">Error loading categories: ${error.message}</option>
+                `;
             }
         }
         
-        // Setup event listeners
+        // Event listener'ları kur
         function setupEventListeners() {
-            // Add product button
+            console.log("Event listener'lar kuruluyor...");
+            
+            // Yeni ürün ekle butonu
             document.getElementById('btnAddProduct').addEventListener('click', () => {
+                console.log("Add product butonuna tıklandı");
                 showProductForm();
             });
             
-            // Cancel button
+            // İptal butonu
             document.getElementById('btnCancel').addEventListener('click', () => {
+                console.log("Cancel butonuna tıklandı");
                 showProductsList();
             });
             
-            // Form submission
+            // Form gönderimi
             document.getElementById('productForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                console.log("Form gönderildi");
                 await saveProduct();
             });
             
-            // Delete button
-            document.getElementById('btnDelete').addEventListener('click', () => {
+            // Silme butonu
+            document.getElementById('btnDelete').addEventListener('click', async () => {
                 if (confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
-                    deleteProduct();
+                    await deleteProduct();
                 }
             });
+            
+            console.log("Event listener'lar başarıyla kuruldu");
         }
         
-        // Show product form
+        // Ürün formunu göster
         function showProductForm(productId = null) {
+            console.log("Ürün formu gösteriliyor, productId:", productId);
             document.getElementById('productsListSection').style.display = 'none';
             document.getElementById('productFormSection').style.display = 'block';
             
             if (productId) {
+                // Düzenleme modu
                 document.getElementById('formTitle').textContent = 'Edit Product';
                 document.getElementById('btnDelete').style.display = 'inline-block';
                 loadProductData(productId);
             } else {
+                // Ekleme modu
                 document.getElementById('formTitle').textContent = 'Add New Product';
                 document.getElementById('btnDelete').style.display = 'none';
                 resetForm();
             }
         }
         
-        // Show products list
+        // Ürün listesini göster
         function showProductsList() {
+            console.log("Ürün listesi gösteriliyor");
             document.getElementById('productsListSection').style.display = 'block';
             document.getElementById('productFormSection').style.display = 'none';
             currentProductId = null;
         }
         
-        // Reset form
+        // Formu sıfırla
         function resetForm() {
+            console.log("Form sıfırlanıyor");
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
+            document.getElementById('productStatus').value = 'active';
         }
         
-        // Load product data for editing
+        // Ürün verilerini formda göster (düzenleme için)
         async function loadProductData(productId) {
             try {
+                console.log("Ürün verileri yükleniyor:", productId);
                 const productDoc = await getDoc(doc(db, 'products', productId));
+                
                 if (productDoc.exists()) {
                     const product = productDoc.data();
                     currentProductId = productId;
@@ -398,28 +472,39 @@
                     document.getElementById('productPrice').value = product.price || '';
                     document.getElementById('productDescription').value = product.description || '';
                     document.getElementById('productStatus').value = product.status || 'active';
+                    
+                    console.log("Ürün verileri formda gösterildi");
+                } else {
+                    alert('Product not found!');
                 }
             } catch (error) {
-                console.error('Error loading product:', error);
-                alert('Error loading product data: ' + error.message);
+                console.error('Ürün verileri yüklenirken hata:', error);
+                alert('Error loading product: ' + error.message);
             }
         }
         
-        // Save product
+        // Ürünü kaydet
         async function saveProduct() {
             try {
                 console.log("Ürün kaydediliyor...");
                 
-                // Collect form data
+                // Form verilerini al
                 const title = document.getElementById('productTitle').value.trim();
                 const category = document.getElementById('productCategory').value;
                 const price = parseFloat(document.getElementById('productPrice').value);
                 const description = document.getElementById('productDescription').value.trim();
                 const status = document.getElementById('productStatus').value;
                 
-                // Validate required fields
+                console.log("Form verileri:", { title, category, price, description, status });
+                
+                // Doğrulama
                 if (!title) {
                     alert('Product title is required');
+                    return;
+                }
+                
+                if (!category) {
+                    alert('Please select a category');
                     return;
                 }
                 
@@ -428,78 +513,82 @@
                     return;
                 }
                 
-                // Prepare product data
+                if (!status) {
+                    alert('Please select a status');
+                    return;
+                }
+                
+                // Ürün verilerini hazırla
                 const productData = {
                     title,
-                    category: category || null,
+                    category,
                     price,
                     description,
                     status,
                     updatedAt: serverTimestamp()
                 };
                 
-                console.log("Ürün verisi:", productData);
+                console.log("Kaydedilecek veri:", productData);
                 
-                // Save to Firestore
+                // Firestore'a kaydet
                 if (currentProductId) {
-                    // Update existing product
-                    console.log("Ürün güncelleniyor:", currentProductId);
+                    // Güncelleme
                     await updateDoc(doc(db, 'products', currentProductId), productData);
+                    console.log("Ürün güncellendi:", currentProductId);
                     alert('Product updated successfully!');
                 } else {
-                    // Add new product
-                    console.log("Yeni ürün ekleniyor");
+                    // Yeni ekleme
                     productData.createdAt = serverTimestamp();
-                    await addDoc(collection(db, 'products'), productData);
+                    const docRef = await addDoc(collection(db, 'products'), productData);
+                    console.log("Yeni ürün eklendi, ID:", docRef.id);
                     alert('Product added successfully!');
                 }
                 
-                // Reload products and show list
+                // Listeyi yenile ve göster
                 await loadProducts();
                 showProductsList();
                 
             } catch (error) {
-                console.error('Error saving product:', error);
+                console.error('Ürün kaydedilirken hata:', error);
                 alert('Error saving product: ' + error.message);
             }
         }
         
-        // Delete product
+        // Ürünü sil
         async function deleteProduct() {
             try {
+                console.log("Ürün siliniyor:", currentProductId);
                 await deleteDoc(doc(db, 'products', currentProductId));
                 alert('Product deleted successfully!');
                 await loadProducts();
                 showProductsList();
             } catch (error) {
-                console.error('Error deleting product:', error);
+                console.error('Ürün silinirken hata:', error);
                 alert('Error deleting product: ' + error.message);
             }
         }
         
-        // Edit product
+        // Global fonksiyonlar (HTML'de onclick için)
         window.editProduct = function(productId) {
+            console.log("Edit product çağrıldı:", productId);
             showProductForm(productId);
-        }
+        };
         
-        // Show delete modal
-        window.showDeleteModal = function(productId) {
-            if (confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
-                deleteProductDirect(productId);
+        window.showDeleteModal = async function(productId) {
+            console.log("Delete modal çağrıldı:", productId);
+            if (confirm('Are you sure you want to delete this product?')) {
+                try {
+                    await deleteDoc(doc(db, 'products', productId));
+                    alert('Product deleted!');
+                    await loadProducts();
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    alert('Error deleting product: ' + error.message);
+                }
             }
-        }
+        };
         
-        // Delete product directly
-        async function deleteProductDirect(productId) {
-            try {
-                await deleteDoc(doc(db, 'products', productId));
-                alert('Product deleted successfully!');
-                await loadProducts();
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                alert('Error deleting product: ' + error.message);
-            }
-        }
+        console.log("Script başarıyla yüklendi");
     </script>
 </body>
 </html>
