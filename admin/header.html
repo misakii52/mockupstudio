@@ -1,1 +1,491 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header Ayarları - Mockup Master</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .header-settings-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .header-preview {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .preview-header {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .preview-header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .preview-logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .preview-nav {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .preview-nav li {
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .preview-nav li.active {
+            color: #000;
+            font-weight: 500;
+        }
+        
+        .preview-search {
+            flex: 1;
+            max-width: 300px;
+        }
+        
+        .preview-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .preview-cart {
+            font-size: 18px;
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #000;
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Responsive preview */
+        .mobile-preview {
+            max-width: 375px;
+            margin-top: 30px;
+            border: 2px solid #333;
+            border-radius: 20px;
+            overflow: hidden;
+            padding: 20px;
+            background: white;
+        }
+        
+        .mobile-preview .preview-header-inner {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .mobile-preview .preview-nav {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .mobile-preview .preview-search {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="logo">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="products.html"><i class="fas fa-box"></i> Ürünler</a></li>
+                    <li><a href="categories.html"><i class="fas fa-folder"></i> Kategoriler</a></li>
+                    <li><a href="header.html" class="active"><i class="fas fa-header"></i> Header Ayarları</a></li>
+                    <li><a href="footer.html"><i class="fas fa-shoe-prints"></i> Footer Ayarları</a></li>
+                </ul>
+            </nav>
+        </aside>
 
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>Header Ayarları</h1>
+                <button class="btn-logout" id="logoutBtn">Çıkış Yap</button>
+            </header>
+
+            <!-- Header Settings Form -->
+            <section class="header-settings-section">
+                <form id="headerSettingsForm">
+                    <!-- Logo Settings -->
+                    <div class="form-group">
+                        <h3 style="margin-bottom: 20px;">Logo Ayarları</h3>
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <label for="siteName">Site Adı</label>
+                                <input type="text" id="siteName" class="form-control" placeholder="Mockup Master" required>
+                            </div>
+                            <div>
+                                <label for="logoUrl">Logo URL (Opsiyonel)</label>
+                                <input type="url" id="logoUrl" class="form-control" placeholder="https://example.com/logo.png">
+                                <small style="color: #666;">Boş bırakırsanız site adı gösterilir</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Header Elements -->
+                    <div class="form-group">
+                        <h3 style="margin-bottom: 20px;">Header Öğeleri</h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <label class="toggle-group">
+                                <input type="checkbox" id="showSearch" checked>
+                                <span class="toggle-slider"></span>
+                                <span style="margin-left: 10px;">Arama Çubuğu Göster</span>
+                            </label>
+                            
+                            <label class="toggle-group">
+                                <input type="checkbox" id="showCart" checked>
+                                <span class="toggle-slider"></span>
+                                <span style="margin-left: 10px;">Sepet İkonu Göster</span>
+                            </label>
+                            
+                            <label class="toggle-group">
+                                <input type="checkbox" id="showCategories" checked>
+                                <span class="toggle-slider"></span>
+                                <span style="margin-left: 10px;">Kategorileri Göster</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Search Placeholder -->
+                    <div class="form-group">
+                        <label for="searchPlaceholder">Arama Placeholder Metni</label>
+                        <input type="text" id="searchPlaceholder" class="form-control" value="Ürün ara...">
+                    </div>
+
+                    <!-- Header Style -->
+                    <div class="form-group">
+                        <h3 style="margin-bottom: 20px;">Header Stili</h3>
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <label for="headerBgColor">Arkaplan Rengi</label>
+                                <input type="color" id="headerBgColor" class="form-control" value="#ffffff" style="height: 40px;">
+                            </div>
+                            <div>
+                                <label for="headerTextColor">Yazı Rengi</label>
+                                <input type="color" id="headerTextColor" class="form-control" value="#000000" style="height: 40px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 40px;">
+                        <button type="submit" class="btn-primary">Ayarları Kaydet</button>
+                        <button type="button" class="btn-secondary" id="btnReset">Varsayılana Döndür</button>
+                    </div>
+                </form>
+
+                <!-- Header Preview -->
+                <div class="header-preview">
+                    <h3 style="margin-bottom: 20px;">Header Önizleme</h3>
+                    
+                    <!-- Desktop Preview -->
+                    <div class="preview-header">
+                        <div class="preview-header-inner">
+                            <div class="preview-logo" id="previewLogo">MOCKUP MASTER</div>
+                            <ul class="preview-nav" id="previewNav">
+                                <li class="active">Shop All</li>
+                                <!-- Kategoriler buraya eklenecek -->
+                            </ul>
+                            <div class="preview-search" id="previewSearch">
+                                <input type="text" placeholder="Ürün ara...">
+                            </div>
+                            <div class="preview-cart" id="previewCart">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span class="cart-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Preview -->
+                    <div class="mobile-preview">
+                        <h4 style="text-align: center; margin-bottom: 15px;">Mobil Görünüm</h4>
+                        <div class="preview-header">
+                            <div class="preview-header-inner">
+                                <div class="preview-logo">MOCKUP MASTER</div>
+                                <div class="preview-search">
+                                    <input type="text" placeholder="Ürün ara...">
+                                </div>
+                                <ul class="preview-nav">
+                                    <li class="active">Shop All</li>
+                                    <!-- Kategoriler buraya eklenecek -->
+                                </ul>
+                                <div class="preview-cart">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    <span class="cart-count">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module">
+        // Firebase'i import et
+        import { auth, db } from '../js/firebase-config.js';
+        import { doc, getDoc, setDoc, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+        
+        // Auth kontrolü
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                loadHeaderSettings();
+                loadCategoriesForPreview();
+                setupEventListeners();
+            }
+        });
+        
+        // Çıkış yap
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Çıkış hatası:', error);
+                alert('Çıkış yapılırken hata: ' + error.message);
+            }
+        });
+        
+        // Header ayarlarını yükle
+        async function loadHeaderSettings() {
+            try {
+                const settingsRef = doc(db, 'settings', 'headerSettings');
+                const settingsDoc = await getDoc(settingsRef);
+                
+                if (settingsDoc.exists()) {
+                    const settings = settingsDoc.data();
+                    
+                    // Logo ayarları
+                    document.getElementById('siteName').value = settings.siteName || 'Mockup Master';
+                    document.getElementById('logoUrl').value = settings.logoUrl || '';
+                    
+                    // Header öğeleri
+                    document.getElementById('showSearch').checked = settings.showSearch !== false;
+                    document.getElementById('showCart').checked = settings.showCart !== false;
+                    document.getElementById('showCategories').checked = settings.showCategories !== false;
+                    
+                    // Search placeholder
+                    document.getElementById('searchPlaceholder').value = settings.searchPlaceholder || 'Ürün ara...';
+                    
+                    // Header stili
+                    document.getElementById('headerBgColor').value = settings.headerBgColor || '#ffffff';
+                    document.getElementById('headerTextColor').value = settings.headerTextColor || '#000000';
+                    
+                    // Preview'u güncelle
+                    updatePreview();
+                }
+                
+            } catch (error) {
+                console.error('Header ayarları yüklenirken hata:', error);
+            }
+        }
+        
+        // Kategorileri preview için yükle
+        async function loadCategoriesForPreview() {
+            try {
+                const categoriesQuery = query(
+                    collection(db, 'categories'),
+                    where('inHeader', '==', true),
+                    where('isActive', '==', true),
+                    orderBy('order')
+                );
+                
+                const querySnapshot = await getDocs(categoriesQuery);
+                const previewNav = document.getElementById('previewNav');
+                
+                if (!previewNav) return;
+                
+                // "Shop All" hariç diğerlerini temizle
+                const shopAllItem = previewNav.querySelector('li:first-child');
+                previewNav.innerHTML = '';
+                if (shopAllItem) {
+                    previewNav.appendChild(shopAllItem);
+                }
+                
+                // Kategorileri ekle
+                querySnapshot.forEach((doc) => {
+                    const category = doc.data();
+                    const li = document.createElement('li');
+                    li.textContent = category.name;
+                    previewNav.appendChild(li);
+                });
+                
+            } catch (error) {
+                console.error('Kategoriler preview için yüklenirken hata:', error);
+            }
+        }
+        
+        // Event listener'ları kur
+        function setupEventListeners() {
+            // Form submit
+            document.getElementById('headerSettingsForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveHeaderSettings();
+            });
+            
+            // Reset butonu
+            document.getElementById('btnReset').addEventListener('click', resetToDefaults);
+            
+            // Ayarlar değiştiğinde preview'ı güncelle
+            const inputs = document.querySelectorAll('#headerSettingsForm input, #headerSettingsForm select');
+            inputs.forEach(input => {
+                input.addEventListener('change', updatePreview);
+                input.addEventListener('input', updatePreview);
+            });
+        }
+        
+        // Preview'ı güncelle
+        function updatePreview() {
+            // Logo
+            const siteName = document.getElementById('siteName').value || 'Mockup Master';
+            const logoUrl = document.getElementById('logoUrl').value;
+            
+            const previewLogo = document.getElementById('previewLogo');
+            if (previewLogo) {
+                if (logoUrl) {
+                    previewLogo.innerHTML = `<img src="${logoUrl}" alt="${siteName}" style="height: 30px;">`;
+                } else {
+                    previewLogo.textContent = siteName;
+                }
+            }
+            
+            // Arama çubuğu
+            const showSearch = document.getElementById('showSearch').checked;
+            const previewSearch = document.getElementById('previewSearch');
+            if (previewSearch) {
+                previewSearch.style.display = showSearch ? 'block' : 'none';
+                const searchInput = previewSearch.querySelector('input');
+                if (searchInput) {
+                    searchInput.placeholder = document.getElementById('searchPlaceholder').value;
+                }
+            }
+            
+            // Sepet ikonu
+            const showCart = document.getElementById('showCart').checked;
+            const previewCart = document.getElementById('previewCart');
+            if (previewCart) {
+                previewCart.style.display = showCart ? 'block' : 'none';
+            }
+            
+            // Kategoriler
+            const showCategories = document.getElementById('showCategories').checked;
+            const previewNav = document.getElementById('previewNav');
+            if (previewNav) {
+                previewNav.style.display = showCategories ? 'flex' : 'none';
+            }
+            
+            // Renkler
+            const bgColor = document.getElementById('headerBgColor').value;
+            const textColor = document.getElementById('headerTextColor').value;
+            
+            const previewHeader = document.querySelector('.preview-header');
+            if (previewHeader) {
+                previewHeader.style.backgroundColor = bgColor;
+                previewHeader.style.color = textColor;
+            }
+            
+            const previewItems = document.querySelectorAll('.preview-header *');
+            previewItems.forEach(item => {
+                item.style.color = textColor;
+            });
+        }
+        
+        // Header ayarlarını kaydet
+        async function saveHeaderSettings() {
+            try {
+                const headerData = {
+                    siteName: document.getElementById('siteName').value.trim(),
+                    logoUrl: document.getElementById('logoUrl').value.trim(),
+                    showSearch: document.getElementById('showSearch').checked,
+                    showCart: document.getElementById('showCart').checked,
+                    showCategories: document.getElementById('showCategories').checked,
+                    searchPlaceholder: document.getElementById('searchPlaceholder').value.trim(),
+                    headerBgColor: document.getElementById('headerBgColor').value,
+                    headerTextColor: document.getElementById('headerTextColor').value,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Validation
+                if (!headerData.siteName) {
+                    alert('Site adı zorunludur');
+                    return;
+                }
+                
+                // Save to Firestore
+                const settingsRef = doc(db, 'settings', 'headerSettings');
+                await setDoc(settingsRef, headerData, { merge: true });
+                
+                alert('Header ayarları kaydedildi!');
+                
+            } catch (error) {
+                console.error('Header ayarları kaydedilirken hata:', error);
+                alert('Kayıt sırasında hata: ' + error.message);
+            }
+        }
+        
+        // Varsayılana döndür
+        function resetToDefaults() {
+            if (confirm('Header ayarlarını varsayılana döndürmek istediğinize emin misiniz?')) {
+                document.getElementById('siteName').value = 'Mockup Master';
+                document.getElementById('logoUrl').value = '';
+                document.getElementById('showSearch').checked = true;
+                document.getElementById('showCart').checked = true;
+                document.getElementById('showCategories').checked = true;
+                document.getElementById('searchPlaceholder').value = 'Ürün ara...';
+                document.getElementById('headerBgColor').value = '#ffffff';
+                document.getElementById('headerTextColor').value = '#000000';
+                
+                updatePreview();
+                alert('Varsayılan ayarlara dönüldü.');
+            }
+        }
+    </script>
+</body>
+</html>
