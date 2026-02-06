@@ -2,58 +2,15 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mockup Master</title>
+    <title>Mağazam</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-inner">
-                <div class="logo">
-                    <a href="index.html">MOCKUP MASTER</a>
-                </div>
-                <nav class="main-nav" id="mainNav">
-                    <!-- Kategoriler dinamik yüklenecek -->
-                </nav>
-                <div class="search-container">
-                    <form id="globalSearchForm">
-                        <input type="text" id="globalSearch" placeholder="Ürün ara...">
-                        <button type="submit"><i class="fas fa-search"></i></button>
-                    </form>
-                    <div class="search-results" id="searchResults"></div>
-                </div>
-                <div class="cart-icon">
-                    <a href="#"><i class="fas fa-shopping-bag"></i><span id="cartCount">0</span></a>
-                </div>
-            </div>
-        </div>
+    <header>
+        <nav id="mainNav"></nav>
     </header>
+    <main id="productsGrid"></main>
 
-    <!-- Ana İçerik -->
-    <main class="main-content">
-        <div class="container">
-            <section class="products-section">
-                <div class="products-grid" id="productsGrid">
-                    <!-- Ürünler buraya yüklenecek -->
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                        <p>Ürünler yükleniyor...</p>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer" id="siteFooter">
-        <!-- Footer dinamik yüklenecek -->
-    </footer>
-
-    <!-- Firebase ve ana JS -->
-    <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
