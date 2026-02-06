@@ -1,7 +1,7 @@
 import { db } from './firebase-config.js';
 import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-// Header CSS (Kategoriler yatay gösterim için)
+// Header CSS
 const headerStyles = `
 <style>
     .header {
@@ -109,7 +109,6 @@ const headerStyles = `
         justify-content: center;
     }
     
-    /* Responsive */
     @media (max-width: 768px) {
         .header-inner {
             flex-wrap: wrap;
@@ -140,48 +139,41 @@ const headerStyles = `
 </style>
 `;
 
-// Sayfa yüklendiğinde header CSS'ini ekle
+// CSS'i ekle
 document.head.insertAdjacentHTML('beforeend', headerStyles);
 
-// Header'a kategorileri yükle
+// Header kategorilerini yükle
 async function loadHeaderCategories() {
     try {
         const categoriesRef = collection(db, 'categories');
         const q = query(categoriesRef, 
-            where('isActive', '==', true), 
             where('inHeader', '==', true), 
+            where('isActive', '==', true), 
             orderBy('order')
         );
         
         const querySnapshot = await getDocs(q);
-        const navMenu = document.querySelector('.main-nav ul');
+        const navMenu = document.querySelector('#mainNav');
         
         if (navMenu) {
-            // "Shop All" hariç diğerlerini temizle
-            const existingItems = navMenu.querySelectorAll('li');
-            if (existingItems.length > 1) {
-                existingItems.forEach((item, index) => {
-                    if (index > 0) item.remove();
-                });
-            }
+            let navHTML = '<ul>';
             
-            // Kategorileri ekle (yatay olarak)
             querySnapshot.forEach((doc) => {
                 const category = doc.data();
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <a href="category.html?id=${doc.id}&name=${encodeURIComponent(category.name)}">
-                        ${category.name}
-                    </a>
+                navHTML += `
+                    <li>
+                        <a href="category.html?id=${doc.id}&name=${encodeURIComponent(category.name)}">
+                            ${category.name}
+                        </a>
+                    </li>
                 `;
-                navMenu.appendChild(li);
             });
             
-            // Eğer kategori yoksa mesaj göster
+            navHTML += '</ul>';
+            navMenu.innerHTML = navHTML;
+            
             if (querySnapshot.empty) {
-                const li = document.createElement('li');
-                li.innerHTML = '<a href="categories.html" style="color: #666; font-style: italic;">Kategori ekleyin</a>';
-                navMenu.appendChild(li);
+                navMenu.innerHTML = '<ul><li><a href="#" style="color: #666; font-style: italic;">No categories</a></li></ul>';
             }
         }
         
@@ -189,13 +181,6 @@ async function loadHeaderCategories() {
         console.error('Header kategorileri yüklenirken hata:', error);
     }
 }
-
-// Ana sayfa yükleme
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadHeaderCategories();
-    await loadProducts();
-    await loadFooter();
-});
 
 // Ürünleri yükle
 async function loadProducts() {
@@ -214,8 +199,7 @@ async function loadProducts() {
         if (querySnapshot.empty) {
             productsGrid.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 60px;">
-                    <p style="color: #666; font-size: 16px;">Henüz ürün yok.</p>
-                    <a href="admin/products.html" style="color: #000; text-decoration: underline;">Admin panelinden ürün ekleyin</a>
+                    <p style="color: #666; font-size: 16px;">No products found.</p>
                 </div>
             `;
             return;
@@ -230,7 +214,8 @@ async function loadProducts() {
                     <div class="product-image">
                         <img src="${product.images?.[0] || 'https://via.placeholder.com/300'}" 
                              alt="${product.title}"
-                             loading="lazy">
+                             loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/300'">
                     </div>
                     <div class="product-info">
                         <h3>${product.title}</h3>
@@ -243,17 +228,24 @@ async function loadProducts() {
         
     } catch (error) {
         console.error('Ürünler yüklenirken hata:', error);
+        const productsGrid = document.getElementById('productsGrid');
+        if (productsGrid) {
+            productsGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #ff4444;">
+                    <p>Error loading products. Please try again later.</p>
+                </div>
+            `;
+        }
     }
 }
 
 // Footer'ı yükle
 async function loadFooter() {
     try {
-        // Kategorileri footer'a yükle
         const categoriesRef = collection(db, 'categories');
         const q = query(categoriesRef, 
-            where('isActive', '==', true), 
             where('inFooter', '==', true), 
+            where('isActive', '==', true), 
             orderBy('order')
         );
         
@@ -278,15 +270,15 @@ async function loadFooter() {
             <div class="container">
                 <div class="footer-content">
                     <div class="footer-section">
-                        <h4>Kategoriler</h4>
+                        <h4>Categories</h4>
                         <ul class="footer-links">
-                            ${categoriesHTML || '<li>Henüz kategori yok</li>'}
+                            ${categoriesHTML || '<li>No categories</li>'}
                         </ul>
                     </div>
                     <div class="footer-section">
-                        <h4>Bağlantılar</h4>
+                        <h4>Links</h4>
                         <ul class="footer-links">
-                            <li><a href="index.html">Ana Sayfa</a></li>
+                            <li><a href="index.html">Home</a></li>
                             <li><a href="admin/login.html">Admin</a></li>
                         </ul>
                     </div>
@@ -301,3 +293,10 @@ async function loadFooter() {
         console.error('Footer yüklenirken hata:', error);
     }
 }
+
+// Sayfa yüklendiğinde çalıştır
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadHeaderCategories();
+    await loadProducts();
+    await loadFooter();
+});
