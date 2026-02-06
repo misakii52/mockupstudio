@@ -1,1 +1,571 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Management | Fourthwall Clone Admin</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .categories-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .btn-add-category {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-add-category:hover {
+            background: #333;
+        }
+        
+        .category-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .category-form-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .order-input {
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="logo">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="categories.html" class="active">Categories</a></li>
+                    <li><a href="footer.html">Footer Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
 
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>Category Management</h1>
+                <button class="btn-logout" id="logoutBtn">Logout</button>
+            </header>
+
+            <!-- Categories List -->
+            <section id="categoriesListSection">
+                <div class="categories-header">
+                    <h2>All Categories</h2>
+                    <button class="btn-add-category" id="btnAddCategory">
+                        <i class="fas fa-plus"></i> Add New Category
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Slug</th>
+                                <th>Order</th>
+                                <th>Header</th>
+                                <th>Footer</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTableBody">
+                            <!-- Categories will be loaded here -->
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px;">
+                                    <div class="spinner"></div>
+                                    <p>Loading categories...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Category Form (initially hidden) -->
+            <section id="categoryFormSection" class="category-form-section" style="display: none;">
+                <div class="admin-header" style="border-bottom: none; padding-bottom: 0;">
+                    <h2 id="formTitle">Add New Category</h2>
+                    <button class="btn-secondary" id="btnCancel">Cancel</button>
+                </div>
+
+                <form id="categoryForm">
+                    <input type="hidden" id="categoryId">
+                    
+                    <div class="form-group">
+                        <label for="categoryName">Category Name *</label>
+                        <input type="text" id="categoryName" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categorySlug">Slug (URL-friendly) *</label>
+                        <input type="text" id="categorySlug" class="form-control" required>
+                        <small style="color: #666; margin-top: 5px; display: block;">
+                            Will be used in URLs (e.g., "tshirt-mockups")
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryOrder">Display Order *</label>
+                        <input type="number" id="categoryOrder" class="form-control order-input" min="0" value="0" required>
+                    </div>
+
+                    <div class="toggle-group">
+                        <label for="inHeader">Show in Header</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="inHeader" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="toggle-group">
+                        <label for="inFooter">Show in Footer</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="inFooter" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="toggle-group">
+                        <label for="isActive">Active</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="isActive" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 30px;">
+                        <button type="submit" class="btn-primary" id="btnSubmit">Save Category</button>
+                        <button type="button" class="btn-danger" id="btnDelete" style="display: none;">Delete Category</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Delete Confirmation -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Delete</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <p>Are you sure you want to delete this category? Products in this category will become uncategorized.</p>
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn-secondary" id="cancelDelete">Cancel</button>
+                <button class="btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, signOut } from '../js/firebase-config.js';
+        import { 
+            collection, 
+            getDocs, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            doc, 
+            query, 
+            orderBy,
+            where,
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+        
+        // State variables
+        let currentCategoryId = null;
+        
+        // Check authentication
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                loadCategories();
+                setupEventListeners();
+            }
+        });
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        });
+        
+        // Load all categories
+        async function loadCategories() {
+            try {
+                const categoriesQuery = query(collection(db, 'categories'), orderBy('order'));
+                const querySnapshot = await getDocs(categoriesQuery);
+                const tableBody = document.getElementById('categoriesTableBody');
+                
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                No categories found. Click "Add New Category" to create one.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tableBody.innerHTML = '';
+                
+                querySnapshot.forEach((docSnapshot) => {
+                    const category = docSnapshot.data();
+                    const categoryId = docSnapshot.id;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${category.name}</td>
+                        <td>${category.slug}</td>
+                        <td>${category.order || 0}</td>
+                        <td>
+                            <span class="status-badge ${category.inHeader ? 'status-active' : 'status-draft'}">
+                                ${category.inHeader ? 'Yes' : 'No'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge ${category.inFooter ? 'status-active' : 'status-draft'}">
+                                ${category.inFooter ? 'Yes' : 'No'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge ${category.isActive ? 'status-active' : 'status-draft'}">
+                                ${category.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="category-actions">
+                                <button class="btn btn-edit" onclick="editCategory('${categoryId}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-danger" onclick="showDeleteModal('${categoryId}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                const tableBody = document.getElementById('categoriesTableBody');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #dc3545;">
+                            Error loading categories. Please try again.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Add category button
+            document.getElementById('btnAddCategory').addEventListener('click', () => {
+                showCategoryForm();
+            });
+            
+            // Cancel button
+            document.getElementById('btnCancel').addEventListener('click', () => {
+                showCategoriesList();
+            });
+            
+            // Form submission
+            document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveCategory();
+            });
+            
+            // Delete button
+            document.getElementById('btnDelete').addEventListener('click', () => {
+                showDeleteModal(currentCategoryId);
+            });
+            
+            // Modal events
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('cancelDelete').addEventListener('click', closeModal);
+            document.getElementById('confirmDelete').addEventListener('click', confirmDelete);
+            
+            // Auto-generate slug from name
+            document.getElementById('categoryName').addEventListener('input', (e) => {
+                const name = e.target.value;
+                const slugInput = document.getElementById('categorySlug');
+                if (!slugInput.value || slugInput.value === slugify(document.getElementById('categoryName').defaultValue)) {
+                    slugInput.value = slugify(name);
+                }
+            });
+        }
+        
+        // Slugify function
+        function slugify(text) {
+            return text
+                .toString()
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, '-')           // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+                .replace(/^-+/, '')             // Trim - from start of text
+                .replace(/-+$/, '');            // Trim - from end of text
+        }
+        
+        // Show category form
+        function showCategoryForm(categoryId = null) {
+            document.getElementById('categoriesListSection').style.display = 'none';
+            document.getElementById('categoryFormSection').style.display = 'block';
+            
+            if (categoryId) {
+                document.getElementById('formTitle').textContent = 'Edit Category';
+                document.getElementById('btnDelete').style.display = 'inline-block';
+                loadCategoryData(categoryId);
+            } else {
+                document.getElementById('formTitle').textContent = 'Add New Category';
+                document.getElementById('btnDelete').style.display = 'none';
+                resetForm();
+            }
+        }
+        
+        // Show categories list
+        function showCategoriesList() {
+            document.getElementById('categoriesListSection').style.display = 'block';
+            document.getElementById('categoryFormSection').style.display = 'none';
+            currentCategoryId = null;
+        }
+        
+        // Reset form
+        function resetForm() {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryId').value = '';
+            document.getElementById('categoryOrder').value = '0';
+            document.getElementById('inHeader').checked = true;
+            document.getElementById('inFooter').checked = true;
+            document.getElementById('isActive').checked = true;
+        }
+        
+        // Load category data for editing
+        async function loadCategoryData(categoryId) {
+            try {
+                const categoryDoc = await getDoc(doc(db, 'categories', categoryId));
+                if (categoryDoc.exists()) {
+                    const category = categoryDoc.data();
+                    currentCategoryId = categoryId;
+                    
+                    document.getElementById('categoryId').value = categoryId;
+                    document.getElementById('categoryName').value = category.name || '';
+                    document.getElementById('categorySlug').value = category.slug || '';
+                    document.getElementById('categoryOrder').value = category.order || 0;
+                    document.getElementById('inHeader').checked = category.inHeader !== false;
+                    document.getElementById('inFooter').checked = category.inFooter !== false;
+                    document.getElementById('isActive').checked = category.isActive !== false;
+                }
+            } catch (error) {
+                console.error('Error loading category:', error);
+                alert('Error loading category data');
+            }
+        }
+        
+        // Save category
+        async function saveCategory() {
+            try {
+                // Collect form data
+                const name = document.getElementById('categoryName').value.trim();
+                const slug = document.getElementById('categorySlug').value.trim();
+                const order = parseInt(document.getElementById('categoryOrder').value) || 0;
+                const inHeader = document.getElementById('inHeader').checked;
+                const inFooter = document.getElementById('inFooter').checked;
+                const isActive = document.getElementById('isActive').checked;
+                
+                // Validate required fields
+                if (!name) {
+                    alert('Category name is required');
+                    return;
+                }
+                
+                if (!slug) {
+                    alert('Category slug is required');
+                    return;
+                }
+                
+                // Check if slug is unique (excluding current category)
+                if (!currentCategoryId) {
+                    const slugQuery = query(collection(db, 'categories'), where('slug', '==', slug));
+                    const slugSnapshot = await getDocs(slugQuery);
+                    if (!slugSnapshot.empty) {
+                        alert('Slug already exists. Please choose a different one.');
+                        return;
+                    }
+                }
+                
+                // Prepare category data
+                const categoryData = {
+                    name,
+                    slug,
+                    order,
+                    inHeader,
+                    inFooter,
+                    isActive,
+                    updatedAt: serverTimestamp()
+                };
+                
+                // Save to Firestore
+                if (currentCategoryId) {
+                    // Update existing category
+                    await updateDoc(doc(db, 'categories', currentCategoryId), categoryData);
+                    alert('Category updated successfully!');
+                } else {
+                    // Add new category
+                    await addDoc(collection(db, 'categories'), categoryData);
+                    alert('Category added successfully!');
+                }
+                
+                // Reload categories and show list
+                await loadCategories();
+                showCategoriesList();
+                
+            } catch (error) {
+                console.error('Error saving category:', error);
+                alert('Error saving category: ' + error.message);
+            }
+        }
+        
+        // Show delete modal
+        window.showDeleteModal = function(categoryId) {
+            currentCategoryId = categoryId;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+        
+        // Confirm delete
+        async function confirmDelete() {
+            try {
+                // Optional: Check if category has products
+                const productsQuery = query(collection(db, 'products'), where('category', '==', currentCategoryId));
+                const productsSnapshot = await getDocs(productsQuery);
+                
+                if (!productsSnapshot.empty) {
+                    if (!confirm(`This category has ${productsSnapshot.size} product(s). They will become uncategorized. Continue?`)) {
+                        closeModal();
+                        return;
+                    }
+                }
+                
+                await deleteDoc(doc(db, 'categories', currentCategoryId));
+                alert('Category deleted successfully!');
+                closeModal();
+                await loadCategories();
+                showCategoriesList();
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                alert('Error deleting category: ' + error.message);
+                closeModal();
+            }
+        }
+        
+        // Edit category
+        window.editCategory = function(categoryId) {
+            showCategoryForm(categoryId);
+        }
+        
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            // Functions are initialized by onAuthStateChanged
+        });
+        
+    </script>
+</body>
+</html>
